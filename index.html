@@ -211,7 +211,15 @@ tbody td{padding:10px 14px;vertical-align:middle;}
 
     <!-- COLLECTION WISE -->
     <div id="sec-co" class="sec">
-      <div class="tc"><div class="tch"><div class="tct">Collection Wise Sales Analysis</div></div>
+      <div class="tc">
+        <div class="tch">
+          <div class="tct">Collection Wise Sales Analysis</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <input class="sb" id="cosrch" placeholder="Search collection...">
+            <span class="cb" id="cocnt">7 collections</span>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--tx2);padding:8px 16px;background:var(--s2);border-bottom:1px solid var(--bd);">&#x1F4CB; Click any collection row to view item &amp; group wise breakdown.</div>
         <div class="tsc"><table><thead><tr><th>#</th><th>Collection</th><th>Total Earning</th><th>Net Wt.</th><th>Dia Wt.</th><th>CS Wt.</th><th>Dia Ratio</th><th>Share %</th><th>Visual</th></tr></thead><tbody id="co-body"></tbody><tfoot><tr class="tot-row" id="co-tot"></tr></tfoot></table></div></div>
     </div>
 
@@ -722,10 +730,50 @@ function init(){
   document.getElementById('it-tot').innerHTML='<td></td><td style="font-weight:700">Total</td><td class="'+(te<0?'en':'ep')+'">'+fmt(te)+'</td><td>'+tnw.toFixed(2)+'g</td><td>'+tdw.toFixed(2)+' cts</td><td>'+tsw.toFixed(2)+' cts</td><td>'+(tnw>0?(tdw/tnw*10).toFixed(2):'—')+'</td><td>'+tAvgWt.toFixed(2)+'g</td><td class="ep">'+fmt(Math.round(tEarnPerG))+'/g</td><td>100%</td>';})();
 
   // Collection tab
+  var coExpandState={};
+var coSrchQ='';
+
+function renderCoTable(){
+  var gt=CO.reduce(function(s,x){return s+x.e;},0);
+  var mxCo2=Math.max.apply(null,CO.map(function(x){return Math.abs(x.e);}));
+  var filtered=CO.filter(function(c){return!coSrchQ||c.n.toLowerCase().indexOf(coSrchQ)>=0;});
+  document.getElementById('cocnt').textContent=filtered.length+' collection'+(filtered.length===1?'':'s');
+
   var cotr='';
-  CO.forEach(function(c,i){cotr+='<tr><td class="rk">'+(i+1)+'</td><td>'+cb(c.n)+'</td>'+ec(c.e)+'<td>'+c.nw.toFixed(2)+'g</td><td>'+c.dw.toFixed(2)+' cts</td><td>'+c.sw.toFixed(2)+' cts</td><td>'+c.dr.toFixed(2)+'</td><td>'+pct(c.e,gt)+'</td><td>'+bar(c.e,mxCo)+'</td></tr>';});
-  document.getElementById('co-body').innerHTML=cotr;
-  (function(){var te=CO.reduce(function(s,x){return s+x.e;},0),tnw=CO.reduce(function(s,x){return s+x.nw;},0),tdw=CO.reduce(function(s,x){return s+x.dw;},0),tsw=CO.reduce(function(s,x){return s+x.sw;},0);document.getElementById('co-tot').innerHTML='<td></td><td style="font-weight:700">Total</td><td class="'+(te<0?'en':'ep')+'">'+fmt(te)+'</td><td>'+tnw.toFixed(2)+'g</td><td>'+tdw.toFixed(2)+' cts</td><td>'+tsw.toFixed(2)+' cts</td><td>'+(tnw>0?(tdw/tnw*10).toFixed(2):'—')+'</td><td>100%</td><td></td>';})();
+  filtered.forEach(function(c,i){
+    var isOpen=!!coExpandState[c.n];
+    var caret=isOpen?'&#x25BC;':'&#x25B6;';
+    cotr+='<tr class="co-row" data-coll="'+esc(c.n)+'" style="cursor:pointer;">'
+      +'<td class="rk">'+(i+1)+'</td>'
+      +'<td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="font-size:9px;color:var(--tx2);width:10px;display:inline-block;">'+caret+'</span>'+cb(c.n)+'</span></td>'
+      +ec(c.e)+'<td>'+c.nw.toFixed(2)+'g</td><td>'+c.dw.toFixed(2)+' cts</td><td>'+c.sw.toFixed(2)+' cts</td><td>'+c.dr.toFixed(2)+'</td><td>'+pct(c.e,gt)+'</td><td>'+bar(c.e,mxCo2)+'</td></tr>';
+    if(isOpen){
+      cotr+='<tr class="co-expand-row"><td></td><td colspan="8" style="padding:0;background:var(--s2);">'
+        +'<div style="padding:10px 14px 14px 30px;">'
+        +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);margin-bottom:8px;">'+esc(c.n)+' &rsaquo; Item &amp; Group Breakdown</div>'
+        +renderCollDrilldown(R,c.n)
+        +'</div></td></tr>';
+    }
+  });
+  document.getElementById('co-body').innerHTML=cotr||'<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--tx2)">No collections match your search</td></tr>';
+
+  var te=CO.reduce(function(s,x){return s+x.e;},0),tnw=CO.reduce(function(s,x){return s+x.nw;},0),tdw=CO.reduce(function(s,x){return s+x.dw;},0),tsw=CO.reduce(function(s,x){return s+x.sw;},0);
+  document.getElementById('co-tot').innerHTML='<td></td><td style="font-weight:700">Total</td><td class="'+(te<0?'en':'ep')+'">'+fmt(te)+'</td><td>'+tnw.toFixed(2)+'g</td><td>'+tdw.toFixed(2)+' cts</td><td>'+tsw.toFixed(2)+' cts</td><td>'+(tnw>0?(tdw/tnw*10).toFixed(2):'—')+'</td><td>100%</td><td></td>';
+}
+
+document.getElementById('cosrch').addEventListener('input',function(){
+  coSrchQ=this.value.toLowerCase().trim();
+  renderCoTable();
+});
+document.getElementById('co-body').addEventListener('click',function(e){
+  var row=e.target.closest('.co-row');
+  if(!row)return;
+  var collName=row.dataset.coll;
+  coExpandState[collName]=!coExpandState[collName];
+  renderCoTable();
+});
+
+renderCoTable();
 
   setupRange();applyRange();
   initSugg();
@@ -780,10 +828,23 @@ document.getElementById('cl-body').addEventListener('click',function(e){
 
 // ── RIGHT PANEL ───────────────────────────────────────────────
 var PD={client:'',rows:[],filt:[]};
+var pcExpandState={};  // track which collections are expanded in the panel
+
+document.getElementById('p-pc-b').addEventListener('click',function(e){
+  var row=e.target.closest('.pc-row');
+  if(!row)return;
+  var collName=row.dataset.coll;
+  pcExpandState[collName]=!pcExpandState[collName];
+  var rows=PD.filt;
+  var totalE=rows.reduce(function(s,r){return s+r.e;},0);
+  document.getElementById('p-pc-b').innerHTML=aggCollHtml(aggRows(rows,function(r){return r.co||'Other';}),totalE,'p-pc-t',rows);
+});
+
 function openPanel(name){
   PD.client=name;
   PD.rows=R.filter(function(r){return r.cl===name;});
   PD.filt=PD.rows.slice();
+  pcExpandState={};
   document.getElementById('p-name').textContent=name;
   var dates=PD.rows.map(function(r){return r.d;}).filter(Boolean).sort();
   document.getElementById('p-sub').textContent=PD.rows.length+' transactions \u00B7 '+(dates[0]||'\u2014')+' \u2013 '+(dates[dates.length-1]||'\u2014');
@@ -847,6 +908,84 @@ function aggHtml(arr,badgeFn,totalE,totId){
   return h||'<tr><td colspan="10" style="text-align:center;padding:16px;color:var(--tx2)">No data</td></tr>';
 }
 
+function aggCollHtml(arr,totalE,totId,sourceRows){
+  var mx=Math.max.apply(null,arr.map(function(a){return Math.abs(a.e);}));
+  var h='';
+  arr.forEach(function(a,i){
+    var collKey=a.n.replace(/[^a-zA-Z0-9]/g,'_');
+    var isOpen=!!pcExpandState[a.n];
+    var caret=isOpen?'&#x25BC;':'&#x25B6;';
+    h+='<tr class="pc-row" data-coll="'+esc(a.n)+'" style="cursor:pointer;">'
+      +'<td class="rk">'+(i+1)+'</td>'
+      +'<td><span style="display:inline-flex;align-items:center;gap:6px;">'
+      +'<span style="font-size:9px;color:var(--tx2);width:10px;display:inline-block;">'+caret+'</span>'
+      +cb(a.n)+'</span></td>'
+      +ec(a.e)+'<td>'+a.pc+'</td><td>'+a.nw.toFixed(2)+'g</td><td>'+a.dw.toFixed(2)+' cts</td><td>'+a.sw.toFixed(2)+' cts</td><td>'+dr(a.dw,a.nw)+'</td><td>'+pct(a.e,totalE)+'</td><td>'+bar(a.e,mx)+'</td></tr>';
+    if(isOpen){
+      h+='<tr class="pc-expand-row"><td></td><td colspan="9" style="padding:0;background:var(--s2);">'
+        +'<div style="padding:10px 14px 14px 30px;">'
+        +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);margin-bottom:8px;">'+esc(a.n)+' &rsaquo; Item &amp; Group Breakdown</div>'
+        +renderCollDrilldown(sourceRows,a.n)
+        +'</div></td></tr>';
+    }
+  });
+  if(totId){
+    var te=arr.reduce(function(s,a){return s+a.e;},0);
+    var tpc=arr.reduce(function(s,a){return s+a.pc;},0);
+    var tnw=arr.reduce(function(s,a){return s+a.nw;},0);
+    var tdw=arr.reduce(function(s,a){return s+a.dw;},0);
+    var tsw=arr.reduce(function(s,a){return s+a.sw;},0);
+    document.getElementById(totId).innerHTML='<td></td><td style="font-weight:700">Total</td><td class="'+(te<0?'en':'ep')+'">'+fmt(te)+'</td><td>'+tpc+'</td><td>'+tnw.toFixed(2)+'g</td><td>'+tdw.toFixed(2)+' cts</td><td>'+tsw.toFixed(2)+' cts</td><td>'+(tnw>0?(tdw/tnw*10).toFixed(2):'—')+'</td><td>100%</td><td></td>';
+  }
+  return h||'<tr><td colspan="10" style="text-align:center;padding:16px;color:var(--tx2)">No data</td></tr>';
+}
+
+function renderCollDrilldown(rows,collName){
+  var collRows=rows.filter(function(r){return(r.co||'Other')===collName;});
+  // group by item then group
+  var itemMap={};
+  collRows.forEach(function(r){
+    var itKey=r.it||'Other';
+    if(!itemMap[itKey])itemMap[itKey]={e:0,pc:0,nw:0,dw:0,sw:0,groups:{}};
+    itemMap[itKey].e+=r.e; itemMap[itKey].pc+=r.pc; itemMap[itKey].nw+=r.nw;
+    itemMap[itKey].dw+=r.dw; itemMap[itKey].sw+=r.sw;
+    var grKey=r.gr||'-'; if(grKey==='-'||grKey==='')grKey='(Unassigned)';
+    if(!itemMap[itKey].groups[grKey])itemMap[itKey].groups[grKey]={e:0,pc:0,nw:0,dw:0,sw:0};
+    itemMap[itKey].groups[grKey].e+=r.e; itemMap[itKey].groups[grKey].pc+=r.pc;
+    itemMap[itKey].groups[grKey].nw+=r.nw; itemMap[itKey].groups[grKey].dw+=r.dw; itemMap[itKey].groups[grKey].sw+=r.sw;
+  });
+  var itemArr=Object.keys(itemMap).map(function(k){return Object.assign({n:k},itemMap[k]);}).sort(function(a,b){return b.e-a.e;});
+
+  var h='<table style="width:100%;font-size:11px;border-collapse:collapse;">'
+    +'<thead><tr style="background:var(--s);"><th style="text-align:left;padding:6px 8px;">Item / Group</th><th style="text-align:right;padding:6px 8px;">Earning</th><th style="text-align:right;padding:6px 8px;">PCS</th><th style="text-align:right;padding:6px 8px;">Net Wt.</th><th style="text-align:right;padding:6px 8px;">Dia Wt.</th><th style="text-align:right;padding:6px 8px;">CS Wt.</th><th style="text-align:right;padding:6px 8px;">Dia Ratio</th></tr></thead><tbody>';
+
+  itemArr.forEach(function(it){
+    h+='<tr style="border-top:1px solid var(--bd);">'
+      +'<td style="padding:6px 8px;font-weight:600;">'+ib(it.n)+'</td>'
+      +'<td style="padding:6px 8px;text-align:right;" class="'+(it.e<0?'en':'ep')+'">'+fmt(it.e)+'</td>'
+      +'<td style="padding:6px 8px;text-align:right;">'+it.pc+'</td>'
+      +'<td style="padding:6px 8px;text-align:right;">'+it.nw.toFixed(2)+'g</td>'
+      +'<td style="padding:6px 8px;text-align:right;">'+it.dw.toFixed(2)+' cts</td>'
+      +'<td style="padding:6px 8px;text-align:right;">'+it.sw.toFixed(2)+' cts</td>'
+      +'<td style="padding:6px 8px;text-align:right;">'+dr(it.dw,it.nw)+'</td>'
+      +'</tr>';
+    var grArr=Object.keys(it.groups).map(function(k){return Object.assign({n:k},it.groups[k]);}).sort(function(a,b){return b.e-a.e;});
+    grArr.forEach(function(g){
+      h+='<tr style="background:rgba(0,0,0,.015);">'
+        +'<td style="padding:5px 8px 5px 24px;color:var(--tx2);font-size:10.5px;">&#x2514; '+esc(g.n)+'</td>'
+        +'<td style="padding:5px 8px;text-align:right;font-size:10.5px;" class="'+(g.e<0?'en':'ep')+'">'+fmt(g.e)+'</td>'
+        +'<td style="padding:5px 8px;text-align:right;font-size:10.5px;">'+g.pc+'</td>'
+        +'<td style="padding:5px 8px;text-align:right;font-size:10.5px;">'+g.nw.toFixed(2)+'g</td>'
+        +'<td style="padding:5px 8px;text-align:right;font-size:10.5px;">'+g.dw.toFixed(2)+' cts</td>'
+        +'<td style="padding:5px 8px;text-align:right;font-size:10.5px;">'+g.sw.toFixed(2)+' cts</td>'
+        +'<td style="padding:5px 8px;text-align:right;font-size:10.5px;">'+dr(g.dw,g.nw)+'</td>'
+        +'</tr>';
+    });
+  });
+  h+='</tbody></table>';
+  return h;
+}
+
 function renderPanel(){
   var rows=PD.filt;
   var totalE=rows.reduce(function(s,r){return s+r.e;},0);
@@ -858,7 +997,7 @@ function renderPanel(){
   document.getElementById('p-pc').textContent=totalPC.toLocaleString();
   document.getElementById('p-nw').textContent=totalNW.toFixed(3)+'g';
 
-  document.getElementById('p-pc-b').innerHTML=aggHtml(aggRows(rows,function(r){return r.co||'Other';}),cb,totalE,'p-pc-t');
+  document.getElementById('p-pc-b').innerHTML=aggCollHtml(aggRows(rows,function(r){return r.co||'Other';}),totalE,'p-pc-t',rows);
   document.getElementById('p-pi-b').innerHTML=aggHtml(aggRows(rows,function(r){return r.it||'Other';}),ib,totalE,'p-pi-t');
   document.getElementById('p-pg-b').innerHTML=aggHtml(aggRows(rows,function(r){var k=r.gr||'-';return(k==='-'||k==='')?'(Unassigned)':k;}),function(n){return'<span style="font-weight:500">'+esc(n)+'</span>';},totalE,'p-pg-t');
 
