@@ -169,16 +169,30 @@ tbody td{padding:10px 14px;vertical-align:middle;}
 
     <!-- OVERVIEW -->
     <div id="sec-ov" class="sec active">
+      <div style="background:var(--s);border-radius:12px;padding:14px 20px;border:1px solid var(--bd);margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="font-size:13px;font-weight:600;color:var(--tx);display:flex;align-items:center;gap:6px;">&#x1F4C5; Period Filter</div>
+        <div class="rl">Year</div>
+        <select id="ov-yr" style="padding:7px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:12px;font-family:inherit;color:var(--tx);background:var(--s);outline:none;">
+          <option value="">All Years</option>
+        </select>
+        <div class="rl">Month</div>
+        <select id="ov-mo" style="padding:7px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:12px;font-family:inherit;color:var(--tx);background:var(--s);outline:none;">
+          <option value="">All Months</option>
+        </select>
+        <button class="mc" id="ov-period-rst">&#x21BA; Reset</button>
+        <span class="cb" id="ov-period-info" style="margin-left:auto;">Showing all-time data</span>
+      </div>
       <div class="sg">
         <div class="sc"><div class="lb2">Total Earning</div><div class="v gold" id="s-tot">—</div><div class="sub">All collections</div></div>
-        <div class="sc"><div class="lb2">Transactions</div><div class="v">5,019</div><div class="sub">Total records</div></div>
-        <div class="sc"><div class="lb2">Clients</div><div class="v">207</div><div class="sub">Unique accounts</div></div>
-        <div class="sc"><div class="lb2">Collections</div><div class="v">7</div><div class="sub">Product lines</div></div>
+        <div class="sc"><div class="lb2">Transactions</div><div class="v" id="s-txn">5,019</div><div class="sub">Total records</div></div>
+        <div class="sc"><div class="lb2">Clients</div><div class="v" id="s-cli">207</div><div class="sub">Unique accounts</div></div>
+        <div class="sc"><div class="lb2">Collections</div><div class="v" id="s-colc">7</div><div class="sub">Product lines</div></div>
         <div class="sc"><div class="lb2">Top Client</div><div class="v gold" style="font-size:14px" id="s-tc">—</div><div class="sub" id="s-tc2">—</div></div>
         <div class="sc"><div class="lb2">Best Collection</div><div class="v gold" style="font-size:14px" id="s-co">—</div><div class="sub" id="s-co2">—</div></div>
       </div>
       <div class="tc"><div class="tch"><div class="tct">Collection Performance</div></div>
-        <div class="tsc"><table><thead><tr><th>#</th><th>Collection</th><th>Total Earning</th><th>Net Wt.</th><th>Dia Wt.</th><th>CS Wt.</th><th>Dia Ratio</th><th>Share %</th><th>Visual</th></tr></thead><tbody id="ov-co"></tbody><tfoot><tr class="tot-row" id="ov-co-tot"></tr></tfoot></table></div></div>
+        <div style="font-size:11px;color:var(--tx2);padding:8px 16px;background:var(--s2);border-bottom:1px solid var(--bd);">&#x1F4CB; Click any collection row to view item &amp; group wise breakdown.</div>
+        <div class="tsc"><table><thead><tr><th>#</th><th>Collection</th><th>Total Earning</th><th>Net Wt.</th><th>Dia Wt.</th><th>CS Wt.</th><th>Dia Ratio</th><th>Earning/g</th><th>Share %</th></tr></thead><tbody id="ov-co"></tbody><tfoot><tr class="tot-row" id="ov-co-tot"></tr></tfoot></table></div></div>
       <div class="tc"><div class="tch"><div class="tct">Item Category Performance (Top 10)</div></div>
         <div class="tsc"><table><thead><tr><th>#</th><th>Item Type</th><th>Total Earning</th><th>Net Wt.</th><th>Dia Wt.</th><th>CS Wt.</th><th>Dia Ratio</th><th>Visual</th></tr></thead><tbody id="ov-it"></tbody><tfoot><tr class="tot-row" id="ov-it-tot"></tr></tfoot></table></div></div>
     </div>
@@ -205,7 +219,19 @@ tbody td{padding:10px 14px;vertical-align:middle;}
 
     <!-- ITEM WISE -->
     <div id="sec-it" class="sec">
-      <div class="tc"><div class="tch"><div class="tct">Item Wise Sales Analysis</div></div>
+      <div style="background:var(--s);border-radius:12px;padding:14px 20px;border:1px solid var(--bd);margin-bottom:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="font-size:13px;font-weight:600;color:var(--tx);display:flex;align-items:center;gap:6px;">&#x1F50D; Filter</div>
+        <div class="rl">Collection</div>
+        <select id="it-fc" style="padding:7px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:12px;font-family:inherit;color:var(--tx);background:var(--s);outline:none;">
+          <option value="">All Collections</option>
+        </select>
+        <input class="sb" id="itsrch" placeholder="Search item type...">
+        <button class="mc" id="it-rst">&#x21BA; Reset</button>
+        <span class="cb" id="itcnt" style="margin-left:auto;"></span>
+      </div>
+      <div class="tc">
+        <div class="tch"><div class="tct">Item Wise Sales Analysis</div></div>
+        <div style="font-size:11px;color:var(--tx2);padding:8px 16px;background:var(--s2);border-bottom:1px solid var(--bd);">&#x1F4CB; Click any item row to view group wise breakdown.</div>
         <div class="tsc"><table><thead><tr><th>#</th><th>Item Type</th><th>Total Earning</th><th>Net Wt.</th><th>Dia Wt.</th><th>CS Wt.</th><th>Dia Ratio</th><th>Avg Wt/Pc</th><th>Earning/g</th><th>Share %</th></tr></thead><tbody id="it-body"></tbody><tfoot><tr class="tot-row" id="it-tot"></tr></tfoot></table></div></div>
     </div>
 
@@ -441,48 +467,6 @@ tbody td{padding:10px 14px;vertical-align:middle;}
       <!-- KPI cards -->
       <div class="sg" id="ga-kpi" style="margin-bottom:20px;"></div>
 
-      <!-- Collection bars -->
-      <div class="tc" style="margin-bottom:20px;">
-        <div class="tch"><div class="tct">&#x1F3BA; Collection — Stock vs Suggested vs Annual Avg</div></div>
-        <div style="padding:20px 24px;" id="ga-bars"></div>
-      </div>
-
-      <!-- Item-wise & Group-wise gap summary -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;" id="ga-iw-gw-grid">
-        <div class="tc" style="margin-bottom:0;">
-          <div class="tch">
-            <div class="tct">&#x1F48D; Item Wise Gap</div>
-            <span class="cb" id="ga-it-cnt"></span>
-          </div>
-          <div style="max-height:380px;overflow:auto;"><table style="font-size:12px;">
-            <thead style="position:sticky;top:0;z-index:5;"><tr>
-              <th>Item</th>
-              <th style="text-align:right;">Sugg PCS</th>
-              <th style="text-align:right;">Stock PCS</th>
-              <th style="text-align:right;">&Delta; PCS</th>
-              <th style="text-align:center;">Status</th>
-            </tr></thead>
-            <tbody id="ga-it-body"></tbody>
-          </table></div>
-        </div>
-        <div class="tc" style="margin-bottom:0;">
-          <div class="tch">
-            <div class="tct">&#x1F4CC; Group Wise Gap</div>
-            <span class="cb" id="ga-gr-cnt"></span>
-          </div>
-          <div style="max-height:380px;overflow:auto;"><table style="font-size:12px;">
-            <thead style="position:sticky;top:0;z-index:5;"><tr>
-              <th>Group</th>
-              <th style="text-align:right;">Sugg PCS</th>
-              <th style="text-align:right;">Stock PCS</th>
-              <th style="text-align:right;">&Delta; PCS</th>
-              <th style="text-align:center;">Status</th>
-            </tr></thead>
-            <tbody id="ga-gr-body"></tbody>
-          </table></div>
-        </div>
-      </div>
-
       <!-- View filter buttons -->
       <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
         <button class="ga-vb" data-v="all"     style="padding:6px 16px;border:1.5px solid var(--ac);border-radius:20px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;background:var(--ac);color:#fff;">All</button>
@@ -527,23 +511,19 @@ tbody td{padding:10px 14px;vertical-align:middle;}
       <div class="tc">
         <div class="tch">
           <div class="tct">Detailed Gap — Collection &rsaquo; Item &rsaquo; Group</div>
-          <div style="font-size:11px;color:var(--tx2);">&Delta; Wt = Stock &minus; Suggested (negative = need more) &bull; Ann Avg = yearly sales average &bull; Sort any column</div>
+          <div style="font-size:11px;color:var(--tx2);">&#x1F4CB; Click any collection or item row to drill down &bull; &Delta; Wt = Stock &minus; Suggested (negative = need more) &bull; Ann Avg = yearly sales average</div>
         </div>
         <div style="max-height:520px;overflow:auto;position:relative;" id="ga-tbl-wrap"><table id="ga-tbl" style="border-collapse:collapse;width:100%;font-size:12px;">
           <thead style="position:sticky;top:0;z-index:10;"><tr>
             <th>#</th>
-            <th data-ga="co">Collection &#x21D5;</th>
-            <th data-ga="it">Item &#x21D5;</th>
-            <th data-ga="gr">Group &#x21D5;</th>
+            <th colspan="2">Collection &rsaquo; Item &rsaquo; Group</th>
             <th data-ga="spcs"   style="text-align:right;background:#fffbf0;">Sugg PCS &#x21D5;</th>
             <th data-ga="cpcs"   style="text-align:right;">Stock PCS &#x21D5;</th>
-            <th data-ga="apcs"   style="text-align:right;background:#f0f8ff;">Ann Avg PCS &#x21D5;</th>
             <th data-ga="dpcs"   style="text-align:right;">&Delta; PCS &#x21D5;</th>
             <th data-ga="snw"    style="text-align:right;background:#fffbf0;">Sugg Wt &#x21D5;</th>
             <th data-ga="cnw"    style="text-align:right;">Stock Wt &#x21D5;</th>
-            <th data-ga="anw"    style="text-align:right;background:#f0f8ff;">Ann Avg Wt &#x21D5;</th>
             <th data-ga="dnw"    style="text-align:right;">&Delta; Wt &#x21D5;</th>
-            <th data-ga="aearn"  style="text-align:right;background:#f0f8ff;">Ann Avg Earn &#x21D5;</th>
+            <th data-ga="epg"    style="text-align:right;">Earning/g &#x21D5;</th>
             <th data-ga="dr"     style="text-align:right;">Dia Ratio &#x21D5;</th>
             <th data-ga="ei"     style="text-align:right;">Earn Impact &#x21D5;</th>
             <th style="text-align:center;">Status</th>
@@ -690,9 +670,6 @@ var inited=false;
 function init(){
   if(inited)return;inited=true;
   var gt=CL.reduce(function(s,c){return s+c.e;},0);
-  var mxC=Math.max.apply(null,CL.map(function(c){return Math.abs(c.e);}));
-  var mxI=Math.max.apply(null,IT.map(function(i){return Math.abs(i.e);}));
-  var mxCo=Math.max.apply(null,CO.map(function(c){return Math.abs(c.e);}));
 
   document.getElementById('s-tot').textContent=fmt(gt);
   document.getElementById('s-tc').textContent=CL[0].n.length>22?CL[0].n.slice(0,22)+'…':CL[0].n;
@@ -701,16 +678,140 @@ function init(){
   document.getElementById('s-co2').textContent=fmt(CO[0].e);
 
   // Overview collections
-  var cr='';
-  CO.forEach(function(c,i){cr+='<tr><td class="rk">'+(i+1)+'</td><td>'+cb(c.n)+'</td>'+ec(c.e)+'<td>'+c.nw.toFixed(2)+'g</td><td>'+c.dw.toFixed(2)+' cts</td><td>'+c.sw.toFixed(2)+' cts</td><td>'+c.dr.toFixed(2)+'</td><td>'+pct(c.e,gt)+'</td><td>'+bar(c.e,mxCo)+'</td></tr>';});
-  document.getElementById('ov-co').innerHTML=cr;
-  (function(){var te=CO.reduce(function(s,x){return s+x.e;},0),tnw=CO.reduce(function(s,x){return s+x.nw;},0),tdw=CO.reduce(function(s,x){return s+x.dw;},0),tsw=CO.reduce(function(s,x){return s+x.sw;},0);document.getElementById('ov-co-tot').innerHTML='<td></td><td style="font-weight:700">Total</td><td class="'+(te<0?'en':'ep')+'">'+fmt(te)+'</td><td>'+tnw.toFixed(2)+'g</td><td>'+tdw.toFixed(2)+' cts</td><td>'+tsw.toFixed(2)+' cts</td><td>'+(tnw>0?(tdw/tnw*10).toFixed(2):'—')+'</td><td>100%</td><td></td>';})();
+  var ovCoExpandState={};
+function ovGetFilteredRows(){
+  var yr=document.getElementById('ov-yr').value;
+  var mo=document.getElementById('ov-mo').value;
+  if(!yr&&!mo)return R;
+  return R.filter(function(r){
+    if(!r.d)return false;
+    var parts=r.d.split('-'); // YYYY-MM-DD
+    if(yr&&parts[0]!==yr)return false;
+    if(mo&&parts[1]!==mo)return false;
+    return true;
+  });
+}
 
-  // Overview items top 10
+function ovAggBy(rows,keyFn){
+  var m={};
+  rows.forEach(function(r){
+    var k=keyFn(r);
+    if(!m[k])m[k]={e:0,nw:0,dw:0,sw:0,pc:0};
+    m[k].e+=r.e;m[k].nw+=r.nw;m[k].dw+=r.dw;m[k].sw+=r.sw;m[k].pc+=r.pc;
+  });
+  return Object.keys(m).map(function(k){
+    var x=m[k];
+    return {n:k,e:x.e,nw:+x.nw.toFixed(2),dw:+x.dw.toFixed(2),sw:+x.sw.toFixed(2),pc:x.pc,dr:x.nw>0?+(x.dw/x.nw*10).toFixed(2):0};
+  }).sort(function(a,b){return b.e-a.e;});
+}
+
+function renderOvCoTable(){
+  var rows=ovGetFilteredRows();
+  var coArr=ovAggBy(rows,function(r){return r.co||'Other';});
+  var gtLocal=coArr.reduce(function(s,x){return s+x.e;},0);
+
+  // update KPI cards for this period
+  var clientsInPeriod=new Set(rows.map(function(r){return r.cl;})).size;
+  document.getElementById('s-tot').textContent=fmt(gtLocal);
+  document.getElementById('s-txn').textContent=rows.length.toLocaleString();
+  document.getElementById('s-cli').textContent=clientsInPeriod.toLocaleString();
+  document.getElementById('s-colc').textContent=coArr.length;
+  if(coArr.length){
+    document.getElementById('s-co').textContent=coArr[0].n;
+    document.getElementById('s-co2').textContent=fmt(coArr[0].e);
+  } else {
+    document.getElementById('s-co').textContent='—';
+    document.getElementById('s-co2').textContent='—';
+  }
+  // top client for this period
+  var clientAgg=ovAggBy(rows,function(r){return r.cl;});
+  if(clientAgg.length){
+    var topC=clientAgg[0];
+    document.getElementById('s-tc').textContent=topC.n.length>22?topC.n.slice(0,22)+'…':topC.n;
+    document.getElementById('s-tc2').textContent=fmt(topC.e);
+  } else {
+    document.getElementById('s-tc').textContent='—';
+    document.getElementById('s-tc2').textContent='—';
+  }
+
+  var cr='';
+  coArr.forEach(function(c,i){
+    var isOpen=!!ovCoExpandState[c.n];
+    var caret=isOpen?'&#x25BC;':'&#x25B6;';
+    var earnPerG=c.nw>0?c.e/c.nw:0;
+    cr+='<tr class="ovco-row" data-coll="'+esc(c.n)+'" style="cursor:pointer;">'
+      +'<td class="rk">'+(i+1)+'</td>'
+      +'<td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="font-size:9px;color:var(--tx2);width:10px;display:inline-block;">'+caret+'</span>'+cb(c.n)+'</span></td>'
+      +ec(c.e)+'<td>'+c.nw.toFixed(2)+'g</td><td>'+c.dw.toFixed(2)+' cts</td><td>'+c.sw.toFixed(2)+' cts</td><td>'+c.dr.toFixed(2)+'</td><td class="ep">'+fmt(Math.round(earnPerG))+'/g</td><td>'+pct(c.e,gtLocal)+'</td></tr>';
+    if(isOpen){
+      cr+='<tr class="ovco-expand-row"><td></td><td colspan="8" style="padding:0;background:var(--s2);">'
+        +'<div style="padding:10px 14px 14px 30px;">'
+        +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);margin-bottom:8px;">'+esc(c.n)+' &rsaquo; Item &amp; Group Breakdown</div>'
+        +renderCollDrilldown(rows,c.n)
+        +'</div></td></tr>';
+    }
+  });
+  document.getElementById('ov-co').innerHTML=cr||'<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--tx2)">No data for this period</td></tr>';
+  var te=coArr.reduce(function(s,x){return s+x.e;},0),tnw=coArr.reduce(function(s,x){return s+x.nw;},0),tdw=coArr.reduce(function(s,x){return s+x.dw;},0),tsw=coArr.reduce(function(s,x){return s+x.sw;},0);
+  var tEarnPerG=tnw>0?te/tnw:0;
+  document.getElementById('ov-co-tot').innerHTML='<td></td><td style="font-weight:700">Total</td><td class="'+(te<0?'en':'ep')+'">'+fmt(te)+'</td><td>'+tnw.toFixed(2)+'g</td><td>'+tdw.toFixed(2)+' cts</td><td>'+tsw.toFixed(2)+' cts</td><td>'+(tnw>0?(tdw/tnw*10).toFixed(2):'—')+'</td><td class="ep">'+fmt(Math.round(tEarnPerG))+'/g</td><td>100%</td>';
+
+  renderOvItTable(rows);
+}
+
+function renderOvItTable(rows){
+  var itArr=ovAggBy(rows,function(r){return r.it||'Other';});
   var ir='';
-  IT.slice(0,10).forEach(function(it,i){ir+='<tr><td class="rk">'+(i+1)+'</td><td>'+ib(it.n)+'</td>'+ec(it.e)+'<td>'+it.nw.toFixed(2)+'g</td><td>'+it.dw.toFixed(2)+' cts</td><td>'+it.sw.toFixed(2)+' cts</td><td>'+it.dr.toFixed(2)+'</td><td>'+bar(it.e,mxI)+'</td></tr>';});
-  document.getElementById('ov-it').innerHTML=ir;
-  (function(){var te=IT.reduce(function(s,x){return s+x.e;},0),tnw=IT.reduce(function(s,x){return s+x.nw;},0),tdw=IT.reduce(function(s,x){return s+x.dw;},0),tsw=IT.reduce(function(s,x){return s+x.sw;},0);document.getElementById('ov-it-tot').innerHTML='<td></td><td style="font-weight:700">Grand Total (all items)</td><td class="'+(te<0?'en':'ep')+'">'+fmt(te)+'</td><td>'+tnw.toFixed(2)+'g</td><td>'+tdw.toFixed(2)+' cts</td><td>'+tsw.toFixed(2)+' cts</td><td>'+(tnw>0?(tdw/tnw*10).toFixed(2):'—')+'</td><td></td>';})();
+  itArr.slice(0,10).forEach(function(it,i){
+    var earnPerG=it.nw>0?it.e/it.nw:0;
+    ir+='<tr><td class="rk">'+(i+1)+'</td><td>'+ib(it.n)+'</td>'+ec(it.e)+'<td>'+it.nw.toFixed(2)+'g</td><td>'+it.dw.toFixed(2)+' cts</td><td>'+it.sw.toFixed(2)+' cts</td><td>'+it.dr.toFixed(2)+'</td><td class="ep">'+fmt(Math.round(earnPerG))+'/g</td></tr>';
+  });
+  document.getElementById('ov-it').innerHTML=ir||'<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--tx2)">No data for this period</td></tr>';
+  var te2=itArr.reduce(function(s,x){return s+x.e;},0),tnw2=itArr.reduce(function(s,x){return s+x.nw;},0),tdw2=itArr.reduce(function(s,x){return s+x.dw;},0),tsw2=itArr.reduce(function(s,x){return s+x.sw;},0);
+  var tEarnPerG2=tnw2>0?te2/tnw2:0;
+  document.getElementById('ov-it-tot').innerHTML='<td></td><td style="font-weight:700">Grand Total (all items)</td><td class="'+(te2<0?'en':'ep')+'">'+fmt(te2)+'</td><td>'+tnw2.toFixed(2)+'g</td><td>'+tdw2.toFixed(2)+' cts</td><td>'+tsw2.toFixed(2)+' cts</td><td>'+(tnw2>0?(tdw2/tnw2*10).toFixed(2):'—')+'</td><td class="ep">'+fmt(Math.round(tEarnPerG2))+'/g</td>';
+}
+
+function ovInitPeriodFilter(){
+  var years=[...new Set(R.map(function(r){return r.d?r.d.split('-')[0]:null;}).filter(Boolean))].sort();
+  var ySel=document.getElementById('ov-yr');
+  years.forEach(function(y){var o=document.createElement('option');o.value=y;o.textContent=y;ySel.appendChild(o);});
+
+  var MN=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var mSel=document.getElementById('ov-mo');
+  for(var m=1;m<=12;m++){
+    var mm=(m<10?'0':'')+m;
+    var o=document.createElement('option');o.value=mm;o.textContent=MN[m];mSel.appendChild(o);
+  }
+
+  function ovUpdateInfo(){
+    var yr=ySel.value,mo=mSel.value;
+    var MNfull=['','January','February','March','April','May','June','July','August','September','October','November','December'];
+    var label='Showing all-time data';
+    if(yr&&mo)label='Showing '+MNfull[parseInt(mo)]+' '+yr;
+    else if(yr)label='Showing year '+yr;
+    else if(mo)label='Showing '+MNfull[parseInt(mo)]+' (all years)';
+    document.getElementById('ov-period-info').textContent=label;
+  }
+
+  ySel.addEventListener('change',function(){ovUpdateInfo();renderOvCoTable();});
+  mSel.addEventListener('change',function(){ovUpdateInfo();renderOvCoTable();});
+  document.getElementById('ov-period-rst').addEventListener('click',function(){
+    ySel.value='';mSel.value='';
+    ovUpdateInfo();renderOvCoTable();
+  });
+  ovUpdateInfo();
+}
+
+document.getElementById('ov-co').addEventListener('click',function(e){
+  var row=e.target.closest('.ovco-row');
+  if(!row)return;
+  var collName=row.dataset.coll;
+  ovCoExpandState[collName]=!ovCoExpandState[collName];
+  renderOvCoTable();
+});
+ovInitPeriodFilter();
+renderOvCoTable();
 
   // Client table
   cSt.data=CL.map(function(c,i){return{n:c.n,e:c.e,nw:c.nw,dw:c.dw,sw:c.sw,dr:c.dr,_i:i+1};});
@@ -718,16 +819,118 @@ function init(){
   renderCl();
 
   // Item tab
+  var itExpandState={};
+var itSrchQ='';
+var itFilterColl='';
+
+function itGetFilteredRows(){
+  if(!itFilterColl)return R;
+  return R.filter(function(r){return(r.co||'Other')===itFilterColl;});
+}
+
+function itAggBy(rows){
+  var m={};
+  rows.forEach(function(r){
+    var k=r.it||'Other';
+    if(!m[k])m[k]={e:0,nw:0,dw:0,sw:0,pc:0};
+    m[k].e+=r.e;m[k].nw+=r.nw;m[k].dw+=r.dw;m[k].sw+=r.sw;m[k].pc+=r.pc;
+  });
+  return Object.keys(m).map(function(k){
+    var x=m[k];
+    return {n:k,e:x.e,nw:+x.nw.toFixed(2),dw:+x.dw.toFixed(2),sw:+x.sw.toFixed(2),pcs:x.pc,dr:x.nw>0?+(x.dw/x.nw*10).toFixed(2):0};
+  }).sort(function(a,b){return b.e-a.e;});
+}
+
+function renderItemGroupDrilldown(rows,itemName){
+  var itemRows=rows.filter(function(r){return(r.it||'Other')===itemName;});
+  var grMap={};
+  itemRows.forEach(function(r){
+    var grKey=r.gr||'-'; if(grKey==='-'||grKey==='')grKey='(Unassigned)';
+    if(!grMap[grKey])grMap[grKey]={e:0,pc:0,nw:0,dw:0,sw:0};
+    grMap[grKey].e+=r.e; grMap[grKey].pc+=r.pc; grMap[grKey].nw+=r.nw; grMap[grKey].dw+=r.dw; grMap[grKey].sw+=r.sw;
+  });
+  var grArr=Object.keys(grMap).map(function(k){return Object.assign({n:k},grMap[k]);}).sort(function(a,b){return b.e-a.e;});
+
+  var h='<table style="width:100%;font-size:11px;border-collapse:collapse;">'
+    +'<thead><tr style="background:var(--s);"><th style="text-align:left;padding:6px 8px;">Group</th><th style="text-align:right;padding:6px 8px;">Earning</th><th style="text-align:right;padding:6px 8px;">PCS</th><th style="text-align:right;padding:6px 8px;">Net Wt.</th><th style="text-align:right;padding:6px 8px;">Dia Wt.</th><th style="text-align:right;padding:6px 8px;">CS Wt.</th><th style="text-align:right;padding:6px 8px;">Dia Ratio</th><th style="text-align:right;padding:6px 8px;">Earning/g</th></tr></thead><tbody>';
+  grArr.forEach(function(g){
+    var grEarnPerG=g.nw>0?g.e/g.nw:0;
+    h+='<tr style="border-top:1px solid var(--bd);">'
+      +'<td style="padding:6px 8px;font-weight:500;">'+esc(g.n)+'</td>'
+      +'<td style="padding:6px 8px;text-align:right;" class="'+(g.e<0?'en':'ep')+'">'+fmt(g.e)+'</td>'
+      +'<td style="padding:6px 8px;text-align:right;">'+g.pc+'</td>'
+      +'<td style="padding:6px 8px;text-align:right;">'+g.nw.toFixed(2)+'g</td>'
+      +'<td style="padding:6px 8px;text-align:right;">'+g.dw.toFixed(2)+' cts</td>'
+      +'<td style="padding:6px 8px;text-align:right;">'+g.sw.toFixed(2)+' cts</td>'
+      +'<td style="padding:6px 8px;text-align:right;">'+dr(g.dw,g.nw)+'</td>'
+      +'<td style="padding:6px 8px;text-align:right;" class="ep">'+fmt(Math.round(grEarnPerG))+'/g</td>'
+      +'</tr>';
+  });
+  h+='</tbody></table>';
+  return h||'<div style="padding:10px;color:var(--tx2);font-size:11px;">No group data</div>';
+}
+
+function renderItTable(){
+  var rows=itGetFilteredRows();
+  var itArr=itAggBy(rows);
+  var filtered=itArr.filter(function(it){return!itSrchQ||it.n.toLowerCase().indexOf(itSrchQ)>=0;});
+  var gtLocal=itArr.reduce(function(s,x){return s+x.e;},0);
+  document.getElementById('itcnt').textContent=filtered.length+' item type'+(filtered.length===1?'':'s');
+
   var itr='';
-  IT.forEach(function(it,i){
+  filtered.forEach(function(it,i){
+    var isOpen=!!itExpandState[it.n];
+    var caret=isOpen?'&#x25BC;':'&#x25B6;';
     var avgWtPc=it.pcs>0?it.nw/it.pcs:0;
     var earnPerG=it.nw>0?it.e/it.nw:0;
-    itr+='<tr><td class="rk">'+(i+1)+'</td><td>'+ib(it.n)+'</td>'+ec(it.e)+'<td>'+it.nw.toFixed(2)+'g</td><td>'+it.dw.toFixed(2)+' cts</td><td>'+it.sw.toFixed(2)+' cts</td><td>'+it.dr.toFixed(2)+'</td><td>'+avgWtPc.toFixed(2)+'g</td><td class="ep">'+fmt(Math.round(earnPerG))+'/g</td><td>'+pct(it.e,gt)+'</td></tr>';
+    itr+='<tr class="it-row" data-item="'+esc(it.n)+'" style="cursor:pointer;">'
+      +'<td class="rk">'+(i+1)+'</td>'
+      +'<td><span style="display:inline-flex;align-items:center;gap:6px;"><span style="font-size:9px;color:var(--tx2);width:10px;display:inline-block;">'+caret+'</span>'+ib(it.n)+'</span></td>'
+      +ec(it.e)+'<td>'+it.nw.toFixed(2)+'g</td><td>'+it.dw.toFixed(2)+' cts</td><td>'+it.sw.toFixed(2)+' cts</td><td>'+it.dr.toFixed(2)+'</td><td>'+avgWtPc.toFixed(2)+'g</td><td class="ep">'+fmt(Math.round(earnPerG))+'/g</td><td>'+pct(it.e,gtLocal)+'</td></tr>';
+    if(isOpen){
+      itr+='<tr class="it-expand-row"><td></td><td colspan="9" style="padding:0;background:var(--s2);">'
+        +'<div style="padding:10px 14px 14px 30px;">'
+        +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--tx2);margin-bottom:8px;">'+esc(it.n)+(itFilterColl?' in '+esc(itFilterColl):'')+' &rsaquo; Group Breakdown</div>'
+        +renderItemGroupDrilldown(rows,it.n)
+        +'</div></td></tr>';
+    }
   });
-  document.getElementById('it-body').innerHTML=itr;
-  (function(){var te=IT.reduce(function(s,x){return s+x.e;},0),tnw=IT.reduce(function(s,x){return s+x.nw;},0),tdw=IT.reduce(function(s,x){return s+x.dw;},0),tsw=IT.reduce(function(s,x){return s+x.sw;},0),tpcs=IT.reduce(function(s,x){return s+x.pcs;},0);
+  document.getElementById('it-body').innerHTML=itr||'<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--tx2)">No items match</td></tr>';
+
+  var te=filtered.reduce(function(s,x){return s+x.e;},0),tnw=filtered.reduce(function(s,x){return s+x.nw;},0),tdw=filtered.reduce(function(s,x){return s+x.dw;},0),tsw=filtered.reduce(function(s,x){return s+x.sw;},0),tpcs=filtered.reduce(function(s,x){return s+x.pcs;},0);
   var tAvgWt=tpcs>0?tnw/tpcs:0, tEarnPerG=tnw>0?te/tnw:0;
-  document.getElementById('it-tot').innerHTML='<td></td><td style="font-weight:700">Total</td><td class="'+(te<0?'en':'ep')+'">'+fmt(te)+'</td><td>'+tnw.toFixed(2)+'g</td><td>'+tdw.toFixed(2)+' cts</td><td>'+tsw.toFixed(2)+' cts</td><td>'+(tnw>0?(tdw/tnw*10).toFixed(2):'—')+'</td><td>'+tAvgWt.toFixed(2)+'g</td><td class="ep">'+fmt(Math.round(tEarnPerG))+'/g</td><td>100%</td>';})();
+  document.getElementById('it-tot').innerHTML='<td></td><td style="font-weight:700">Total</td><td class="'+(te<0?'en':'ep')+'">'+fmt(te)+'</td><td>'+tnw.toFixed(2)+'g</td><td>'+tdw.toFixed(2)+' cts</td><td>'+tsw.toFixed(2)+' cts</td><td>'+(tnw>0?(tdw/tnw*10).toFixed(2):'—')+'</td><td>'+tAvgWt.toFixed(2)+'g</td><td class="ep">'+fmt(Math.round(tEarnPerG))+'/g</td><td>100%</td>';
+}
+
+function itInitFilter(){
+  var colls=[...new Set(R.map(function(r){return r.co||'Other';}))].sort();
+  var fc=document.getElementById('it-fc');
+  colls.forEach(function(v){var o=document.createElement('option');o.value=v;o.textContent=v;fc.appendChild(o);});
+  fc.addEventListener('change',function(){
+    itFilterColl=this.value;
+    itExpandState={};
+    renderItTable();
+  });
+  document.getElementById('itsrch').addEventListener('input',function(){
+    itSrchQ=this.value.toLowerCase().trim();
+    renderItTable();
+  });
+  document.getElementById('it-rst').addEventListener('click',function(){
+    fc.value='';itFilterColl='';
+    document.getElementById('itsrch').value='';itSrchQ='';
+    itExpandState={};
+    renderItTable();
+  });
+}
+document.getElementById('it-body').addEventListener('click',function(e){
+  var row=e.target.closest('.it-row');
+  if(!row)return;
+  var itemName=row.dataset.item;
+  itExpandState[itemName]=!itExpandState[itemName];
+  renderItTable();
+});
+itInitFilter();
+renderItTable();
 
   // Collection tab
   var coExpandState={};
@@ -957,9 +1160,10 @@ function renderCollDrilldown(rows,collName){
   var itemArr=Object.keys(itemMap).map(function(k){return Object.assign({n:k},itemMap[k]);}).sort(function(a,b){return b.e-a.e;});
 
   var h='<table style="width:100%;font-size:11px;border-collapse:collapse;">'
-    +'<thead><tr style="background:var(--s);"><th style="text-align:left;padding:6px 8px;">Item / Group</th><th style="text-align:right;padding:6px 8px;">Earning</th><th style="text-align:right;padding:6px 8px;">PCS</th><th style="text-align:right;padding:6px 8px;">Net Wt.</th><th style="text-align:right;padding:6px 8px;">Dia Wt.</th><th style="text-align:right;padding:6px 8px;">CS Wt.</th><th style="text-align:right;padding:6px 8px;">Dia Ratio</th></tr></thead><tbody>';
+    +'<thead><tr style="background:var(--s);"><th style="text-align:left;padding:6px 8px;">Item / Group</th><th style="text-align:right;padding:6px 8px;">Earning</th><th style="text-align:right;padding:6px 8px;">PCS</th><th style="text-align:right;padding:6px 8px;">Net Wt.</th><th style="text-align:right;padding:6px 8px;">Dia Wt.</th><th style="text-align:right;padding:6px 8px;">CS Wt.</th><th style="text-align:right;padding:6px 8px;">Dia Ratio</th><th style="text-align:right;padding:6px 8px;">Earning/g</th></tr></thead><tbody>';
 
   itemArr.forEach(function(it){
+    var itEarnPerG=it.nw>0?it.e/it.nw:0;
     h+='<tr style="border-top:1px solid var(--bd);">'
       +'<td style="padding:6px 8px;font-weight:600;">'+ib(it.n)+'</td>'
       +'<td style="padding:6px 8px;text-align:right;" class="'+(it.e<0?'en':'ep')+'">'+fmt(it.e)+'</td>'
@@ -968,9 +1172,11 @@ function renderCollDrilldown(rows,collName){
       +'<td style="padding:6px 8px;text-align:right;">'+it.dw.toFixed(2)+' cts</td>'
       +'<td style="padding:6px 8px;text-align:right;">'+it.sw.toFixed(2)+' cts</td>'
       +'<td style="padding:6px 8px;text-align:right;">'+dr(it.dw,it.nw)+'</td>'
+      +'<td style="padding:6px 8px;text-align:right;" class="ep">'+fmt(Math.round(itEarnPerG))+'/g</td>'
       +'</tr>';
     var grArr=Object.keys(it.groups).map(function(k){return Object.assign({n:k},it.groups[k]);}).sort(function(a,b){return b.e-a.e;});
     grArr.forEach(function(g){
+      var grEarnPerG=g.nw>0?g.e/g.nw:0;
       h+='<tr style="background:rgba(0,0,0,.015);">'
         +'<td style="padding:5px 8px 5px 24px;color:var(--tx2);font-size:10.5px;">&#x2514; '+esc(g.n)+'</td>'
         +'<td style="padding:5px 8px;text-align:right;font-size:10.5px;" class="'+(g.e<0?'en':'ep')+'">'+fmt(g.e)+'</td>'
@@ -979,6 +1185,7 @@ function renderCollDrilldown(rows,collName){
         +'<td style="padding:5px 8px;text-align:right;font-size:10.5px;">'+g.dw.toFixed(2)+' cts</td>'
         +'<td style="padding:5px 8px;text-align:right;font-size:10.5px;">'+g.sw.toFixed(2)+' cts</td>'
         +'<td style="padding:5px 8px;text-align:right;font-size:10.5px;">'+dr(g.dw,g.nw)+'</td>'
+        +'<td style="padding:5px 8px;text-align:right;font-size:10.5px;" class="ep">'+fmt(Math.round(grEarnPerG))+'/g</td>'
         +'</tr>';
     });
   });
@@ -1485,6 +1692,7 @@ function renderCSDetail(c){
   c.s.forEach(function(s,i){
     var rank=i+1;
     var rankColor=rank<=3?'var(--ac)':'var(--tx2)';
+    var earnPerG=s.wpp>0?s.ae/s.wpp:0;
     suggRows+='<tr>'
       +'<td style="text-align:center;font-weight:700;color:'+rankColor+';font-size:13px;">'+rank+'</td>'
       +'<td>'+cb(s.co)+'</td>'
@@ -1494,7 +1702,7 @@ function renderCSDetail(c){
       +'<td style="text-align:center;">'+s.p+'</td>'
       +'<td style="text-align:right;">'+s.wpp.toFixed(2)+' g</td>'
       +'<td style="text-align:center;font-weight:600;">'+s.dr.toFixed(2)+'</td>'
-      +'<td style="text-align:right;" class="ep">'+fmt(s.ae)+'</td>'
+      +'<td style="text-align:right;" class="ep">'+fmt(Math.round(earnPerG))+'/g</td>'
       +'</tr>';
   });
 
@@ -1535,7 +1743,7 @@ function renderCSDetail(c){
     +'<th style="text-align:center;">PCS</th>'
     +'<th style="text-align:right;">Avg Wt/Pc</th>'
     +'<th style="text-align:center;">Dia Ratio</th>'
-    +'<th style="text-align:right;">Avg Earn/Pc</th>'
+    +'<th style="text-align:right;">Earning/g</th>'
     +'</tr></thead>'
     +'<tbody>'+suggRows+'</tbody>'
     +'</table></div>'
@@ -1871,21 +2079,19 @@ function gaCalc(){
     var co=parts[0],it=parts[1],gr=parts[2];
     var spcs=p?p.spcs:0, snw=p?p.snw:0;
     var cpcs=s?s.cpcs:0, cnw=s?parseFloat(s.cnw.toFixed(2)):0;
-    var apcs=a?parseFloat(a.apcs.toFixed(1)):0;
-    var anw =a?parseFloat(a.anw.toFixed(2)):0;
-    var aearn=a?a.aearn:0;
+    var anw=a?parseFloat(a.anw.toFixed(2)):0;
     var dpcs=cpcs-spcs, dnw=parseFloat((cnw-snw).toFixed(2));
     var dr=(p?p.dr:0)||(a?a.adr:0)||(s?s.dr:0)||0;
     var ae=p?p.ae:(a?a.aearn:0);
     var ei=dpcs*ae;
-    rows.push({co:co,it:it,gr:gr,spcs:spcs,cpcs:cpcs,apcs:apcs,dpcs:dpcs,snw:snw,cnw:cnw,anw:anw,dnw:dnw,dr:dr,ae:ae,aearn:aearn,ei:ei});
+    var epg=cnw>0?(cpcs*ae)/cnw:0;
+    rows.push({co:co,it:it,gr:gr,spcs:spcs,cpcs:cpcs,dpcs:dpcs,snw:snw,cnw:cnw,dnw:dnw,anw:anw,dr:dr,ae:ae,ei:ei,epg:epg});
   });
 
   rows.sort(function(a,b){return a.dnw-b.dnw;});
   gaSt.data=rows;
   gaFilter2();
   gaKPI(rows);
-  gaBars(rows);
 
   // Update per-collection suggested earning labels on sliders
   var collEarn={};
@@ -1900,7 +2106,6 @@ function gaCalc(){
   });
 
   gaRenderEarnTable(rows,collEarn);
-  gaItGrRender(rows);
 }
 
 
@@ -1925,205 +2130,179 @@ function gaKPI(rows){
     '<div class="sc"><div class="lb2">&#x2714; Balanced</div><div class="v" style="font-size:18px;">'+ok.length+'</div><div class="sub">at target level</div></div>';
 }
 
-function gaBars(rows){
-  var m={};
-  rows.forEach(function(r){
-    if(!m[r.co])m[r.co]={snw:0,cnw:0,anw:0};
-    m[r.co].snw+=r.snw; m[r.co].cnw+=r.cnw; m[r.co].anw+=r.anw;
-  });
-  var arr=Object.keys(m).map(function(k){
-    return{n:k,snw:m[k].snw,cnw:m[k].cnw,anw:m[k].anw,d:parseFloat((m[k].cnw-m[k].snw).toFixed(1))};
-  }).sort(function(a,b){return b.snw-a.snw;});
-  var mx=Math.max.apply(null,arr.map(function(a){return Math.max(a.snw,a.cnw,a.anw);}));
-  var h='<div style="display:flex;gap:16px;font-size:10px;color:var(--tx2);margin-bottom:14px;flex-wrap:wrap;">'
-    +'<span><span style="display:inline-block;width:24px;height:5px;background:var(--ac);opacity:0.3;border-radius:3px;vertical-align:middle;"></span> Suggested</span>'
-    +'<span><span style="display:inline-block;width:24px;height:8px;background:var(--ac);border-radius:3px;vertical-align:middle;"></span> Stock</span>'
-    +'<span><span style="display:inline-block;width:24px;height:3px;background:#5ea8c9;border-radius:3px;vertical-align:middle;border:1.5px dashed #5ea8c9;"></span> Annual Avg</span>'
-    +'</div>';
-  arr.forEach(function(a){
-    var col=SG_COLORS[a.n]||'#aaa';
-    var sw =mx?(a.snw/mx*100).toFixed(1):0;
-    var cw =mx?(a.cnw/mx*100).toFixed(1):0;
-    var aw =mx?(a.anw/mx*100).toFixed(1):0;
-    var dcls=a.d<0?'en':'ep';
-    h+='<div style="margin-bottom:20px;">'
-      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:6px;">'
-      +'<div style="display:flex;align-items:center;gap:8px;">'
-      +'<span style="width:11px;height:11px;border-radius:2px;background:'+col+';display:inline-block;"></span>'
-      +'<span style="font-size:13px;font-weight:600;">'+esc(a.n)+'</span>'
-      +'</div>'
-      +'<div style="display:flex;gap:12px;font-size:12px;flex-wrap:wrap;">'
-      +'<span style="color:var(--ac);"><b>Sugg: '+a.snw.toFixed(0)+'g</b></span>'
-      +'<span><b>Stock: '+a.cnw.toFixed(0)+'g</b></span>'
-      +'<span style="color:#5ea8c9;"><b>Ann Avg: '+a.anw.toFixed(0)+'g</b></span>'
-      +'<span class="'+dcls+'"><b>'+(a.d>=0?'+':'')+a.d+'g vs plan</b></span>'
-      +'</div></div>'
-      // Bar track
-      +'<div style="position:relative;height:12px;border-radius:6px;background:#eee;">'
-      // Suggested (faint wide bar)
-      +'<div style="position:absolute;top:1px;left:0;height:10px;width:'+sw+'%;background:'+col+';opacity:0.2;border-radius:5px;"></div>'
-      // Stock (solid)
-      +'<div style="position:absolute;top:0;left:0;height:12px;width:'+cw+'%;background:'+col+';border-radius:6px;transition:width .4s;"></div>'
-      // Annual avg (dashed line marker)
-      +'<div style="position:absolute;top:-3px;left:'+aw+'%;width:2px;height:18px;background:#5ea8c9;border-radius:2px;"></div>'
-      +'</div>'
-      +'<div style="font-size:10px;color:var(--tx2);margin-top:3px;display:flex;justify-content:space-between;">'
-      +'<span>'+(a.d<0?'<span style="color:#1a7a4a;">Need '+Math.abs(a.d).toFixed(0)+'g more vs plan</span>':a.d>0?'<span style="color:#c0392b;">'+a.d.toFixed(0)+'g excess vs plan</span>':'<span>At plan target</span>')+'</span>'
-      +(a.anw>0?'<span style="color:#5ea8c9;">Annual demand: '+a.anw.toFixed(0)+'g/yr</span>':'')
-      +'</div></div>';
-  });
-  document.getElementById('ga-bars').innerHTML=h;
+var gaExpandCo={};
+var gaExpandCoIt={};
+
+function gaStatusBadge(dnw){
+  var isMiss=dnw<-0.5, isExc=dnw>0.5;
+  return isMiss?'<span style="background:#e8f8ee;color:#1a7a4a;border-radius:10px;padding:2px 8px;font-size:10px;font-weight:700;">&#x2B06; Missing</span>':
+         isExc ?'<span style="background:#fce8e8;color:#c0392b;border-radius:10px;padding:2px 8px;font-size:10px;font-weight:700;">&#x2B07; Excess</span>':
+                '<span style="background:#f0f0f0;color:var(--tx2);border-radius:10px;padding:2px 8px;font-size:10px;font-weight:600;">&#x2714; OK</span>';
 }
-
-function gaItGrRender(rows){
-  // ── Item-wise aggregation ──
-  var itM={};
-  rows.forEach(function(r){
-    if(!itM[r.it])itM[r.it]={spcs:0,cpcs:0,snw:0,cnw:0};
-    itM[r.it].spcs+=r.spcs; itM[r.it].cpcs+=r.cpcs;
-    itM[r.it].snw+=r.snw;   itM[r.it].cnw+=r.cnw;
-  });
-  var itArr=Object.keys(itM).map(function(k){
-    var d=itM[k]; var dpcs=d.cpcs-d.spcs;
-    return {n:k,spcs:d.spcs,cpcs:d.cpcs,dpcs:dpcs};
-  }).sort(function(a,b){return a.dpcs-b.dpcs;});
-
-  var itH='';
-  itArr.forEach(function(a){
-    var isMiss=a.dpcs<0, isExc=a.dpcs>0;
-    var badge=isMiss?'<span style="background:#e8f8ee;color:#1a7a4a;border-radius:10px;padding:2px 7px;font-size:9px;font-weight:700;">&#x2B06;</span>':
-              isExc ?'<span style="background:#fce8e8;color:#c0392b;border-radius:10px;padding:2px 7px;font-size:9px;font-weight:700;">&#x2B07;</span>':
-                     '<span style="background:#f0f0f0;color:var(--tx2);border-radius:10px;padding:2px 7px;font-size:9px;font-weight:600;">&#x2714;</span>';
-    var dcls=isMiss?'color:#1a7a4a;font-weight:700;':isExc?'color:#c0392b;font-weight:700;':'color:var(--tx2);';
-    itH+='<tr><td>'+ib(a.n)+'</td>'
-      +'<td style="text-align:right;">'+a.spcs+'</td>'
-      +'<td style="text-align:right;font-weight:600;">'+a.cpcs+'</td>'
-      +'<td style="text-align:right;'+dcls+'">'+(a.dpcs>=0?'+':'')+a.dpcs+'</td>'
-      +'<td style="text-align:center;">'+badge+'</td></tr>';
-  });
-  document.getElementById('ga-it-body').innerHTML=itH||'<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--tx2);">No data</td></tr>';
-  document.getElementById('ga-it-cnt').textContent=itArr.length+' items';
-
-  // ── Group-wise aggregation ──
-  var grM={};
-  rows.forEach(function(r){
-    var k=(r.gr==='—'||r.gr==='-')?'(Unassigned)':r.gr;
-    if(!grM[k])grM[k]={spcs:0,cpcs:0,snw:0,cnw:0};
-    grM[k].spcs+=r.spcs; grM[k].cpcs+=r.cpcs;
-    grM[k].snw+=r.snw;   grM[k].cnw+=r.cnw;
-  });
-  var grArr=Object.keys(grM).map(function(k){
-    var d=grM[k]; var dpcs=d.cpcs-d.spcs;
-    return {n:k,spcs:d.spcs,cpcs:d.cpcs,dpcs:dpcs};
-  }).sort(function(a,b){return a.dpcs-b.dpcs;});
-
-  var grH='';
-  grArr.forEach(function(a){
-    var isMiss=a.dpcs<0, isExc=a.dpcs>0;
-    var badge=isMiss?'<span style="background:#e8f8ee;color:#1a7a4a;border-radius:10px;padding:2px 7px;font-size:9px;font-weight:700;">&#x2B06;</span>':
-              isExc ?'<span style="background:#fce8e8;color:#c0392b;border-radius:10px;padding:2px 7px;font-size:9px;font-weight:700;">&#x2B07;</span>':
-                     '<span style="background:#f0f0f0;color:var(--tx2);border-radius:10px;padding:2px 7px;font-size:9px;font-weight:600;">&#x2714;</span>';
-    var dcls=isMiss?'color:#1a7a4a;font-weight:700;':isExc?'color:#c0392b;font-weight:700;':'color:var(--tx2);';
-    grH+='<tr><td style="font-size:11px;font-weight:500;">'+esc(a.n)+'</td>'
-      +'<td style="text-align:right;">'+a.spcs+'</td>'
-      +'<td style="text-align:right;font-weight:600;">'+a.cpcs+'</td>'
-      +'<td style="text-align:right;'+dcls+'">'+(a.dpcs>=0?'+':'')+a.dpcs+'</td>'
-      +'<td style="text-align:center;">'+badge+'</td></tr>';
-  });
-  document.getElementById('ga-gr-body').innerHTML=grH||'<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--tx2);">No data</td></tr>';
-  document.getElementById('ga-gr-cnt').textContent=grArr.length+' groups';
+function gaRowLeft(dnw){
+  var isMiss=dnw<-0.5, isExc=dnw>0.5;
+  return isMiss?'border-left:3px solid #27ae60;':isExc?'border-left:3px solid #c0392b;':'';
+}
+function gaSum(arr,key){return arr.reduce(function(s,r){return s+r[key];},0);}
+function gaAggGroup(rows){
+  var cnw=gaSum(rows,'cnw'), snw=gaSum(rows,'snw'), ei=gaSum(rows,'ei');
+  var stockEarn=gaSum(rows.map(function(r){return{e:r.cpcs*r.ae};}),'e');
+  return {
+    spcs:gaSum(rows,'spcs'), cpcs:gaSum(rows,'cpcs'),
+    dpcs:gaSum(rows,'cpcs')-gaSum(rows,'spcs'),
+    snw:+snw.toFixed(2), cnw:+cnw.toFixed(2),
+    dnw:+(cnw-snw).toFixed(2),
+    ei:ei,
+    epg:cnw>0?stockEarn/cnw:0,
+    dr:snw>0?+(gaSum(rows.map(function(r){return{dw:r.dr*r.snw/10};}),'dw')/snw*10).toFixed(2):0
+  };
+}
+function gaRowCells(d,extraStyle){
+  var dcls_p=d.dpcs<0?'color:#1a7a4a;font-weight:700;':d.dpcs>0?'color:#c0392b;font-weight:700;':'color:var(--tx2);';
+  var dcls_n=d.dnw<0?'color:#1a7a4a;font-weight:700;':d.dnw>0?'color:#c0392b;font-weight:700;':'color:var(--tx2);';
+  return '<td style="text-align:right;background:#fffbf0;'+(extraStyle||'')+'">'+d.spcs+'</td>'
+    +'<td style="text-align:right;font-weight:600;'+(extraStyle||'')+'">'+d.cpcs+'</td>'
+    +'<td style="text-align:right;'+dcls_p+(extraStyle||'')+'">'+(d.dpcs>=0?'+':'')+d.dpcs+'</td>'
+    +'<td style="text-align:right;background:#fffbf0;'+(extraStyle||'')+'">'+d.snw.toFixed(2)+'</td>'
+    +'<td style="text-align:right;font-weight:600;'+(extraStyle||'')+'">'+d.cnw.toFixed(2)+'</td>'
+    +'<td style="text-align:right;'+dcls_n+(extraStyle||'')+'">'+(d.dnw>=0?'+':'')+d.dnw.toFixed(2)+'</td>'
+    +'<td style="text-align:right;'+(extraStyle||'')+'" class="ep">'+fmt(Math.round(d.epg))+'/g</td>'
+    +'<td style="text-align:right;'+(extraStyle||'')+'">'+d.dr.toFixed(2)+'</td>'
+    +'<td style="text-align:right;'+(extraStyle||'')+'" class="'+(d.ei>=0?'ep':'en')+'">'+(d.ei>=0?'+':'')+fmt(d.ei)+'</td>'
+    +'<td style="text-align:center;'+(extraStyle||'')+'">'+gaStatusBadge(d.dnw)+'</td>';
 }
 
 function gaRender(){
-  var st=(gaSt.pg-1)*gaSt.pp, pg=gaSt.filt.slice(st,st+gaSt.pp), rows='';
-  if(!pg.length){
-    rows='<tr><td colspan="16" style="text-align:center;padding:28px;color:var(--tx2);">No rows match</td></tr>';
+  // Build Collection > Item > Group tree from gaSt.filt
+  var coMap={};
+  gaSt.filt.forEach(function(r){
+    if(!coMap[r.co])coMap[r.co]={rows:[],items:{}};
+    coMap[r.co].rows.push(r);
+    if(!coMap[r.co].items[r.it])coMap[r.co].items[r.it]={rows:[]};
+    coMap[r.co].items[r.it].rows.push(r);
+  });
+  var coNames=Object.keys(coMap).sort(function(a,b){
+    return gaAggGroup(coMap[a].rows).dnw-gaAggGroup(coMap[b].rows).dnw;
+  });
+
+  var st=(gaSt.pg-1)*gaSt.pp;
+  var pageCoNames=coNames.slice(st,st+gaSt.pp);
+
+  var rows='';
+  if(!pageCoNames.length){
+    rows='<tr><td colspan="12" style="text-align:center;padding:28px;color:var(--tx2);">No rows match</td></tr>';
   } else {
-    pg.forEach(function(r,i){
-      var isMiss=r.dnw<-0.5, isExc=r.dnw>0.5;
-      var badge=isMiss?'<span style="background:#e8f8ee;color:#1a7a4a;border-radius:10px;padding:2px 8px;font-size:10px;font-weight:700;">&#x2B06; Missing</span>':
-                isExc ?'<span style="background:#fce8e8;color:#c0392b;border-radius:10px;padding:2px 8px;font-size:10px;font-weight:700;">&#x2B07; Excess</span>':
-                       '<span style="background:#f0f0f0;color:var(--tx2);border-radius:10px;padding:2px 8px;font-size:10px;font-weight:600;">&#x2714; OK</span>';
-      var rl=isMiss?'border-left:3px solid #27ae60;':isExc?'border-left:3px solid #c0392b;':'';
-      var dcls_n=r.dnw<0?'color:#1a7a4a;font-weight:700;':r.dnw>0?'color:#c0392b;font-weight:700;':'color:var(--tx2);';
-      var dcls_p=r.dpcs<0?'color:#1a7a4a;font-weight:700;':r.dpcs>0?'color:#c0392b;font-weight:700;':'color:var(--tx2);';
-      var grD=(r.gr==='—'||r.gr==='-')?'<span style="color:var(--tx2);">—</span>':'<span style="font-size:11px;font-weight:500;">'+esc(r.gr)+'</span>';
-      // annual avg vs stock comparison
-      var annDiff=parseFloat((r.cnw-r.anw).toFixed(2));
-      var annCls=annDiff<0?'color:#1a7a4a;':'color:#c0392b;';
-      rows+='<tr style="'+rl+'">'
-        +'<td class="rk">'+(st+i+1)+'</td>'
-        +'<td>'+cb(r.co)+'</td>'
-        +'<td>'+ib(r.it)+'</td>'
-        +'<td>'+grD+'</td>'
-        +'<td style="text-align:right;background:#fffbf0;">'+r.spcs+'</td>'
-        +'<td style="text-align:right;font-weight:600;">'+r.cpcs+'</td>'
-        +'<td style="text-align:right;background:#f0f8ff;color:#5ea8c9;font-weight:600;">'+r.apcs.toFixed(1)+'</td>'
-        +'<td style="text-align:right;'+dcls_p+'">'+(r.dpcs>=0?'+':'')+r.dpcs+'</td>'
-        +'<td style="text-align:right;background:#fffbf0;">'+r.snw.toFixed(2)+'</td>'
-        +'<td style="text-align:right;font-weight:600;">'+r.cnw.toFixed(2)+'</td>'
-        +'<td style="text-align:right;background:#f0f8ff;color:#5ea8c9;font-weight:600;">'+r.anw.toFixed(2)+'</td>'
-        +'<td style="text-align:right;'+dcls_n+'">'+(r.dnw>=0?'+':'')+r.dnw.toFixed(2)+'</td>'
-        +'<td style="text-align:right;background:#f0f8ff;" class="ep">'+fmt(r.aearn)+'</td>'
-        +'<td style="text-align:right;">'+r.dr.toFixed(2)+'</td>'
-        +'<td style="text-align:right;" class="'+(r.ei>=0?'ep':'en')+'">'+(r.ei>=0?'+':'')+fmt(r.ei)+'</td>'
-        +'<td style="text-align:center;">'+badge+'</td>'
+    pageCoNames.forEach(function(coName,ci){
+      var coAgg=gaAggGroup(coMap[coName].rows);
+      var coOpen=!!gaExpandCo[coName];
+      var coCaret=coOpen?'&#x25BC;':'&#x25B6;';
+      rows+='<tr class="ga-co-row" data-co="'+esc(coName)+'" style="cursor:pointer;'+gaRowLeft(coAgg.dnw)+'">'
+        +'<td class="rk">'+(st+ci+1)+'</td>'
+        +'<td colspan="2"><span style="display:inline-flex;align-items:center;gap:6px;"><span style="font-size:9px;color:var(--tx2);width:10px;display:inline-block;">'+coCaret+'</span>'+cb(coName)+'<span style="font-size:9px;color:var(--tx2);">('+coMap[coName].rows.length+' rows)</span></span></td>'
+        +gaRowCells(coAgg,'font-weight:700;')
         +'</tr>';
+
+      if(coOpen){
+        var itNames=Object.keys(coMap[coName].items).sort(function(a,b){
+          return gaAggGroup(coMap[coName].items[a].rows).dnw-gaAggGroup(coMap[coName].items[b].rows).dnw;
+        });
+        itNames.forEach(function(itName){
+          var itAgg=gaAggGroup(coMap[coName].items[itName].rows);
+          var itKey=coName+'||'+itName;
+          var itOpen=!!gaExpandCoIt[itKey];
+          var itCaret=itOpen?'&#x25BC;':'&#x25B6;';
+          rows+='<tr class="ga-it-row" data-itkey="'+esc(itKey)+'" style="cursor:pointer;background:var(--s2);'+gaRowLeft(itAgg.dnw)+'">'
+            +'<td></td>'
+            +'<td style="padding-left:22px;"><span style="font-size:9px;color:var(--tx2);width:10px;display:inline-block;">'+itCaret+'</span></td>'
+            +'<td>'+ib(itName)+'</td>'
+            +gaRowCells(itAgg)
+            +'</tr>';
+
+          if(itOpen){
+            coMap[coName].items[itName].rows.sort(function(a,b){return a.dnw-b.dnw;}).forEach(function(r){
+              var grD=(r.gr==='—'||r.gr==='-')?'<span style="color:var(--tx2);">—</span>':'<span style="font-size:11px;font-weight:500;">'+esc(r.gr)+'</span>';
+              rows+='<tr style="background:rgba(0,0,0,.015);'+gaRowLeft(r.dnw)+'">'
+                +'<td></td><td></td>'
+                +'<td style="padding-left:20px;">'+grD+'</td>'
+                +gaRowCells(r)
+                +'</tr>';
+            });
+          }
+        });
+      }
     });
   }
   document.getElementById('ga-body').innerHTML=rows;
+
   var tspcs=gaSt.filt.reduce(function(s,r){return s+r.spcs;},0);
   var tcpcs=gaSt.filt.reduce(function(s,r){return s+r.cpcs;},0);
-  var tapcs=gaSt.filt.reduce(function(s,r){return s+r.apcs;},0);
   var tsnw =gaSt.filt.reduce(function(s,r){return s+r.snw;},0);
   var tcnw =gaSt.filt.reduce(function(s,r){return s+r.cnw;},0);
-  var tanw =gaSt.filt.reduce(function(s,r){return s+r.anw;},0);
   var tdnw =parseFloat((tcnw-tsnw).toFixed(2));
   var tei  =gaSt.filt.reduce(function(s,r){return s+r.ei;},0);
-  var taearn=gaSt.filt.reduce(function(s,r){return s+r.aearn;},0);
+  var tStockEarn=gaSt.filt.reduce(function(s,r){return s+r.cpcs*r.ae;},0);
+  var tEpg=tcnw>0?tStockEarn/tcnw:0;
   document.getElementById('ga-tot').innerHTML=
-    '<td></td><td></td><td></td><td style="font-weight:700;">Total ('+gaSt.filt.length+')</td>'
+    '<td></td><td colspan="2" style="font-weight:700;">Total ('+coNames.length+' collections, '+gaSt.filt.length+' rows)</td>'
     +'<td style="text-align:right;font-weight:700;background:#fffbf0;">'+tspcs+'</td>'
     +'<td style="text-align:right;font-weight:700;">'+tcpcs+'</td>'
-    +'<td style="text-align:right;font-weight:700;background:#f0f8ff;color:#5ea8c9;">'+tapcs.toFixed(0)+'</td>'
     +'<td style="text-align:right;font-weight:700;color:'+(tcpcs-tspcs<0?'#1a7a4a':'#c0392b')+';">'+(tcpcs-tspcs>=0?'+':'')+(tcpcs-tspcs)+'</td>'
     +'<td style="text-align:right;font-weight:700;background:#fffbf0;">'+tsnw.toFixed(1)+'</td>'
     +'<td style="text-align:right;font-weight:700;">'+tcnw.toFixed(1)+'</td>'
-    +'<td style="text-align:right;font-weight:700;background:#f0f8ff;color:#5ea8c9;">'+tanw.toFixed(1)+'</td>'
     +'<td style="text-align:right;font-weight:700;color:'+(tdnw<0?'#1a7a4a':'#c0392b')+';">'+(tdnw>=0?'+':'')+tdnw.toFixed(1)+'</td>'
-    +'<td style="text-align:right;font-weight:700;background:#f0f8ff;" class="ep">'+fmt(taearn)+'</td>'
+    +'<td style="text-align:right;font-weight:700;" class="ep">'+fmt(Math.round(tEpg))+'/g</td>'
     +'<td></td>'
     +'<td style="text-align:right;" class="'+(tei>=0?'ep':'en')+'">'+(tei>=0?'+':'')+fmt(tei)+'</td>'
     +'<td></td>';
-  renderPg('ga',gaSt);
+
+  var totalPagesData={length:coNames.length};
+  renderPg('ga',{filt:totalPagesData,pg:gaSt.pg,pp:gaSt.pp});
 }
+
+document.getElementById('ga-body').addEventListener('click',function(e){
+  var coRow=e.target.closest('.ga-co-row');
+  var itRow=e.target.closest('.ga-it-row');
+  if(itRow){
+    var itKey=itRow.dataset.itkey;
+    gaExpandCoIt[itKey]=!gaExpandCoIt[itKey];
+    gaRender();
+    return;
+  }
+  if(coRow){
+    var coName=coRow.dataset.co;
+    gaExpandCo[coName]=!gaExpandCo[coName];
+    gaRender();
+    return;
+  }
+});
 
 function gaExportExcel(){
   if(typeof XLSX==='undefined'){alert('Excel export library failed to load. Please check your internet connection and try again.');return;}
   var data=gaSt.filt.length?gaSt.filt:gaSt.data;
   var rows=[];
-  rows.push(['Collection','Item','Group','Suggested PCS','Stock PCS','Δ PCS','Suggested Wt (g)','Stock Wt (g)','Δ Wt (g)','Annual Avg PCS','Annual Avg Wt (g)','Annual Avg Earning','Dia Ratio','Earning Impact','Status']);
+  rows.push(['Collection','Item','Group','Suggested PCS','Stock PCS','Δ PCS','Suggested Wt (g)','Stock Wt (g)','Δ Wt (g)','Earning/g','Dia Ratio','Earning Impact','Status']);
   data.forEach(function(r){
     var status=r.dnw<-0.5?'Missing':r.dnw>0.5?'Excess':'OK';
+    var epg=r.cnw>0?(r.cpcs*r.ae)/r.cnw:0;
     rows.push([
       r.co, r.it, (r.gr==='—'||r.gr==='-')?'':r.gr,
       r.spcs, r.cpcs, r.dpcs,
       r.snw, r.cnw, r.dnw,
-      r.apcs, r.anw, r.aearn,
-      r.dr, r.ei, status
+      Math.round(epg), r.dr, r.ei, status
     ]);
   });
   // Totals row
   var sum=function(k){return data.reduce(function(s,r){return s+(r[k]||0);},0);};
+  var tStockEarn=data.reduce(function(s,r){return s+r.cpcs*r.ae;},0);
+  var tcnw=sum('cnw');
   rows.push(['Total','','',
     sum('spcs'), sum('cpcs'), sum('cpcs')-sum('spcs'),
-    +sum('snw').toFixed(2), +sum('cnw').toFixed(2), +(sum('cnw')-sum('snw')).toFixed(2),
-    +sum('apcs').toFixed(1), +sum('anw').toFixed(2), sum('aearn'),
-    '', sum('ei'), ''
+    +sum('snw').toFixed(2), +tcnw.toFixed(2), +(tcnw-sum('snw')).toFixed(2),
+    tcnw>0?Math.round(tStockEarn/tcnw):0, '', sum('ei'), ''
   ]);
 
   var ws=XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols']=[{wch:14},{wch:14},{wch:14},{wch:11},{wch:10},{wch:8},{wch:12},{wch:11},{wch:10},{wch:13},{wch:13},{wch:15},{wch:9},{wch:13},{wch:9}];
+  ws['!cols']=[{wch:14},{wch:14},{wch:14},{wch:11},{wch:10},{wch:8},{wch:12},{wch:11},{wch:10},{wch:10},{wch:9},{wch:13},{wch:9}];
   var wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Stock Gap Analysis');
 
