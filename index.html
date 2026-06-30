@@ -124,6 +124,11 @@ tbody td{padding:10px 14px;vertical-align:middle;}
 .mtc thead th{padding:8px 11px;font-size:9.5px;}
 .mtc tbody td{padding:8px 11px;}
 @media(max-width:768px){.main{padding:14px;}.hdr{padding:0 14px;}.ntw{padding:0 14px;}.sb{width:140px;}.pn{width:100vw;}.ms{grid-template-columns:repeat(2,1fr);}}
+#ga-tgt-sl{-webkit-appearance:none;appearance:none;}
+#ga-tgt-sl::-webkit-slider-runnable-track{background:transparent;height:6px;}
+#ga-tgt-sl::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:2.5px solid var(--ac);cursor:pointer;margin-top:-5px;box-shadow:0 1px 4px rgba(0,0,0,.18);}
+#ga-tgt-sl::-moz-range-track{background:transparent;height:6px;}
+#ga-tgt-sl::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:2.5px solid var(--ac);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.18);}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -423,11 +428,34 @@ tbody td{padding:10px 14px;vertical-align:middle;}
           <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--ac);margin-bottom:4px;">Stock Gap Analysis &mdash; 27 Jun 2026</div>
           <div style="font-size:12px;color:var(--tx2);line-height:1.7;">Compares current stock vs suggestion plan and yearly sales average. Pick month &amp; target, hit Analyse. <span style="color:#1a7a4a;font-weight:600;">&#x2B06; Green = need more.</span> <span style="color:#c0392b;font-weight:600;">&#x2B07; Red = excess.</span></div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-          <div class="rl">Month</div>
-          <select id="ga-mo" style="padding:7px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:12px;font-family:inherit;color:var(--tx);background:var(--s);outline:none;"></select>
-          <div class="rl">Target (g)</div>
-          <input class="rb" type="number" id="ga-tgt" value="10000" min="100" max="200000" step="500" style="width:100px;">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <div style="position:relative;">
+            <div class="rl" style="margin-bottom:4px;">Months</div>
+            <button type="button" id="ga-mo-btn" style="padding:7px 14px;border:1.5px solid var(--bd);border-radius:8px;font-size:12px;font-family:inherit;color:var(--tx);background:var(--s);cursor:pointer;min-width:120px;text-align:left;">Jan &#x25BE;</button>
+            <div id="ga-mo-panel" style="display:none;position:absolute;top:100%;left:0;margin-top:4px;background:var(--s);border:1.5px solid var(--bd);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:10px;z-index:50;width:200px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;max-height:220px;overflow-y:auto;" id="ga-mo-checks"></div>
+              <div style="display:flex;gap:6px;margin-top:8px;border-top:1px solid var(--bd);padding-top:8px;">
+                <button type="button" class="mc" id="ga-mo-all" style="flex:1;padding:4px;font-size:11px;">All</button>
+                <button type="button" class="mc" id="ga-mo-none" style="flex:1;padding:4px;font-size:11px;">None</button>
+              </div>
+            </div>
+          </div>
+          <div style="position:relative;">
+            <div class="rl" style="margin-bottom:4px;">Years</div>
+            <button type="button" id="ga-yr-btn" style="padding:7px 14px;border:1.5px solid var(--bd);border-radius:8px;font-size:12px;font-family:inherit;color:var(--tx);background:var(--s);cursor:pointer;min-width:120px;text-align:left;">All Years &#x25BE;</button>
+            <div id="ga-yr-panel" style="display:none;position:absolute;top:100%;left:0;margin-top:4px;background:var(--s);border:1.5px solid var(--bd);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:10px;z-index:50;width:140px;">
+              <div id="ga-yr-checks"></div>
+              <div style="display:flex;gap:6px;margin-top:8px;border-top:1px solid var(--bd);padding-top:8px;">
+                <button type="button" class="mc" id="ga-yr-all" style="flex:1;padding:4px;font-size:11px;">All</button>
+                <button type="button" class="mc" id="ga-yr-none" style="flex:1;padding:4px;font-size:11px;">None</button>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="rl">Target (g)</div>
+            <input type="range" id="ga-tgt-sl" min="500" max="50000" step="500" value="10000" style="width:140px;-webkit-appearance:none;height:6px;border-radius:3px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--ac) 19%,#e8e0d8 19%);">
+            <span id="ga-tgt-lbl" style="font-size:12px;font-weight:700;color:var(--ac);min-width:60px;">10,000g</span>
+          </div>
           <button class="ab" id="ga-go">Analyse</button>
           <button class="ab" id="ga-xlsx" style="background:#1d6f42;">&#x1F4E5; Export Excel</button>
         </div>
@@ -1737,7 +1765,7 @@ function renderCSDetail(c){
 
 
 // ── STOCK GAP ANALYSIS ────────────────────────────────────────
-var gaSt={data:[],filt:[],pg:1,pp:50,sk:'dnw',sd:1,view:'all',alloc:{},baseline:{},month:1};
+var gaSt={data:[],filt:[],pg:1,pp:50,sk:'dnw',sd:1,view:'all',alloc:{},baseline:{},months:['1'],years:[]};
 
 // Build annual avg lookup once
 var STOCK_DATA=[{"co":"CASCADE","it":"BROOCH","gr":"COCKTAIL","spcs":2,"snw":22.224,"sdw":12.62,"ssw":10.75,"searn":123300,"sskus":2,"sdr":5.679,"swpp":11.112},{"co":"CASCADE","it":"Bangle","gr":"2-3 LINERS","spcs":4,"snw":89.25,"sdw":28.37,"ssw":60.03,"searn":295000,"sskus":4,"sdr":3.179,"swpp":22.312},{"co":"CASCADE","it":"Bangle","gr":"COCKTAIL","spcs":2,"snw":43.204,"sdw":11.44,"ssw":40.11,"searn":159400,"sskus":2,"sdr":2.648,"swpp":21.602},{"co":"CASCADE","it":"Bangle","gr":"SINGLE LINE","spcs":2,"snw":34.24,"sdw":8.18,"ssw":14.95,"searn":48400,"sskus":2,"sdr":2.389,"swpp":17.12},{"co":"CASCADE","it":"Bracelet","gr":"2-3 LINERS","spcs":8,"snw":136.99,"sdw":26.88,"ssw":106.33,"searn":309566,"sskus":8,"sdr":1.962,"swpp":17.124},{"co":"CASCADE","it":"Bracelet","gr":"COCKTAIL","spcs":3,"snw":126.621,"sdw":35.42,"ssw":79.07,"searn":336200,"sskus":3,"sdr":2.797,"swpp":42.207},{"co":"CASCADE","it":"Bracelet","gr":"SINGLE LINE","spcs":13,"snw":134.983,"sdw":33.52,"ssw":114.52,"searn":428300,"sskus":13,"sdr":2.483,"swpp":10.383},{"co":"CASCADE","it":"Earring","gr":"BALI - HOOPS","spcs":14,"snw":133.682,"sdw":21.601,"ssw":78.83,"searn":106684,"sskus":14,"sdr":1.616,"swpp":9.549},{"co":"CASCADE","it":"Earring","gr":"CHANDBALI","spcs":15,"snw":338.241,"sdw":97.69,"ssw":185.05,"searn":728600,"sskus":15,"sdr":2.888,"swpp":22.549},{"co":"CASCADE","it":"Earring","gr":"COCKTAIL","spcs":3,"snw":41.866,"sdw":13.32,"ssw":19.05,"searn":89500,"sskus":3,"sdr":3.182,"swpp":13.955},{"co":"CASCADE","it":"Earring","gr":"DANGLERS","spcs":5,"snw":52.976,"sdw":15.13,"ssw":31.81,"searn":123386,"sskus":5,"sdr":2.856,"swpp":10.595},{"co":"CASCADE","it":"Earring","gr":"EVERY DAY","spcs":1,"snw":2.666,"sdw":0.56,"ssw":1.88,"searn":4900,"sskus":1,"sdr":2.101,"swpp":2.666},{"co":"CASCADE","it":"Earring","gr":"FRONT BACK","spcs":3,"snw":39.05,"sdw":12.53,"ssw":22.14,"searn":102300,"sskus":3,"sdr":3.209,"swpp":13.017},{"co":"CASCADE","it":"Earring","gr":"JHUMKI","spcs":3,"snw":64.725,"sdw":19.39,"ssw":23.99,"searn":102100,"sskus":3,"sdr":2.996,"swpp":21.575},{"co":"CASCADE","it":"Earring","gr":"STUDS","spcs":41,"snw":229.106,"sdw":57.94,"ssw":138.68,"searn":448070,"sskus":41,"sdr":2.529,"swpp":5.588},{"co":"CASCADE","it":"Half Bangle","gr":"2-3 LINERS","spcs":6,"snw":112.334,"sdw":22.83,"ssw":51.23,"searn":119400,"sskus":6,"sdr":2.032,"swpp":18.722},{"co":"CASCADE","it":"Half Bangle","gr":"BALI - HOOPS","spcs":1,"snw":18.899,"sdw":5.76,"ssw":3.68,"searn":23400,"sskus":1,"sdr":3.048,"swpp":18.899},{"co":"CASCADE","it":"Half Bangle","gr":"COCKTAIL","spcs":9,"snw":198.203,"sdw":39.32,"ssw":82.19,"searn":166251,"sskus":9,"sdr":1.984,"swpp":22.023},{"co":"CASCADE","it":"Half Bangle","gr":"SINGLE LINE","spcs":9,"snw":192.236,"sdw":27.01,"ssw":59.37,"searn":-53559,"sskus":9,"sdr":1.405,"swpp":21.36},{"co":"CASCADE","it":"N EARRING 2","gr":"CIRCLE OF LIFE","spcs":3,"snw":17.505,"sdw":1.96,"ssw":5.69,"searn":-14970,"sskus":3,"sdr":1.12,"swpp":5.835},{"co":"CASCADE","it":"N EARRING 2","gr":"EVERY DAY","spcs":1,"snw":2.4,"sdw":0.51,"ssw":1.15,"searn":2300,"sskus":1,"sdr":2.125,"swpp":2.4},{"co":"CASCADE","it":"N EARRING 2","gr":"STUDS","spcs":1,"snw":5.855,"sdw":1.28,"ssw":5.84,"searn":18200,"sskus":1,"sdr":2.186,"swpp":5.855},{"co":"CASCADE","it":"N EARRING 2","gr":"\u2014","spcs":1,"snw":10.44,"sdw":3.52,"ssw":4.46,"searn":23500,"sskus":1,"sdr":3.372,"swpp":10.44},{"co":"CASCADE","it":"N Earring","gr":"CLASSIC","spcs":8,"snw":70.051,"sdw":13.97,"ssw":55.56,"searn":165700,"sskus":8,"sdr":1.994,"swpp":8.756},{"co":"CASCADE","it":"N Earring","gr":"COUTURE","spcs":4,"snw":41.24,"sdw":10.06,"ssw":24.21,"searn":85500,"sskus":4,"sdr":2.439,"swpp":10.31},{"co":"CASCADE","it":"N Earring","gr":"FUN","spcs":2,"snw":24.604,"sdw":6.05,"ssw":10.81,"searn":37100,"sskus":2,"sdr":2.459,"swpp":12.302},{"co":"CASCADE","it":"N Earring","gr":"MONO CHROME","spcs":1,"snw":7.741,"sdw":1.16,"ssw":2.52,"searn":-771,"sskus":1,"sdr":1.499,"swpp":7.741},{"co":"CASCADE","it":"N Earring","gr":"MULTI LINERS","spcs":7,"snw":116.769,"sdw":27.31,"ssw":66.68,"searn":220800,"sskus":7,"sdr":2.339,"swpp":16.681},{"co":"CASCADE","it":"N Earring","gr":"\u2014","spcs":1,"snw":8.766,"sdw":3.65,"ssw":3.25,"searn":28700,"sskus":1,"sdr":4.164,"swpp":8.766},{"co":"CASCADE","it":"Necklace","gr":"CHANDBALI","spcs":1,"snw":21.042,"sdw":1.9,"ssw":18.0,"searn":27500,"sskus":1,"sdr":0.903,"swpp":21.042},{"co":"CASCADE","it":"Necklace","gr":"CLASSIC","spcs":3,"snw":57.245,"sdw":7.93,"ssw":38.27,"searn":65100,"sskus":3,"sdr":1.385,"swpp":19.082},{"co":"CASCADE","it":"Necklace2","gr":"CIRCLE OF LIFE","spcs":5,"snw":25.0,"sdw":4.19,"ssw":14.19,"searn":19600,"sskus":5,"sdr":1.676,"swpp":5.0},{"co":"CASCADE","it":"Necklace2","gr":"COCKTAIL","spcs":1,"snw":8.594,"sdw":2.53,"ssw":4.25,"searn":17300,"sskus":1,"sdr":2.944,"swpp":8.594},{"co":"CASCADE","it":"Necklace2","gr":"EVERY DAY","spcs":6,"snw":32.381,"sdw":8.39,"ssw":6.81,"searn":14559,"sskus":6,"sdr":2.591,"swpp":5.397},{"co":"CASCADE","it":"Necklace2","gr":"MONO CHROME","spcs":1,"snw":9.313,"sdw":2.26,"ssw":6.61,"searn":21000,"sskus":1,"sdr":2.427,"swpp":9.313},{"co":"CASCADE","it":"Necklace2","gr":"TANMANIYA","spcs":3,"snw":22.4,"sdw":4.91,"ssw":5.87,"searn":3982,"sskus":3,"sdr":2.192,"swpp":7.467},{"co":"CASCADE","it":"P Earring","gr":"STUDS","spcs":1,"snw":3.999,"sdw":1.64,"ssw":1.28,"searn":10800,"sskus":1,"sdr":4.101,"swpp":3.999},{"co":"CASCADE","it":"P Earring","gr":"\u2014","spcs":1,"snw":3.926,"sdw":1.23,"ssw":1.2,"searn":5800,"sskus":1,"sdr":3.133,"swpp":3.926},{"co":"CASCADE","it":"Ring","gr":"3 STONES","spcs":2,"snw":9.931,"sdw":2.12,"ssw":2.99,"searn":2624,"sskus":2,"sdr":2.135,"swpp":4.966},{"co":"CASCADE","it":"Ring","gr":"BAND","spcs":41,"snw":265.269,"sdw":40.9,"ssw":137.02,"searn":110354,"sskus":41,"sdr":1.542,"swpp":6.47},{"co":"CASCADE","it":"Ring","gr":"COCKTAIL","spcs":16,"snw":134.653,"sdw":31.63,"ssw":56.37,"searn":133795,"sskus":16,"sdr":2.349,"swpp":8.416},{"co":"CASCADE","it":"Ring","gr":"EVERY DAY","spcs":5,"snw":21.442,"sdw":5.03,"ssw":4.96,"searn":5104,"sskus":5,"sdr":2.346,"swpp":4.288},{"co":"CASCADE","it":"Ring","gr":"FUN","spcs":5,"snw":29.277,"sdw":7.36,"ssw":8.02,"searn":17956,"sskus":5,"sdr":2.514,"swpp":5.855},{"co":"CASCADE","it":"Ring","gr":"OPEN RING","spcs":26,"snw":119.586,"sdw":26.42,"ssw":38.17,"searn":51300,"sskus":26,"sdr":2.209,"swpp":4.599},{"co":"CASCADE","it":"Ring","gr":"\u2014","spcs":2,"snw":7.348,"sdw":1.58,"ssw":1.58,"searn":-460,"sskus":2,"sdr":2.15,"swpp":3.674},{"co":"CASCADE","it":"starNecklace","gr":"CLASSIC","spcs":8,"snw":212.855,"sdw":47.63,"ssw":166.51,"searn":556500,"sskus":8,"sdr":2.238,"swpp":26.607},{"co":"CASCADE","it":"starNecklace","gr":"COUTURE","spcs":2,"snw":48.957,"sdw":10.08,"ssw":37.73,"searn":115300,"sskus":2,"sdr":2.059,"swpp":24.478},{"co":"CASCADE","it":"starNecklace","gr":"FUN","spcs":1,"snw":33.361,"sdw":19.94,"ssw":6.4,"searn":158100,"sskus":1,"sdr":5.977,"swpp":33.361},{"co":"CASCADE","it":"starNecklace","gr":"MONO CHROME","spcs":1,"snw":24.302,"sdw":4.83,"ssw":12.16,"searn":28800,"sskus":1,"sdr":1.987,"swpp":24.302},{"co":"CASCADE","it":"starNecklace","gr":"MULTI LINERS","spcs":7,"snw":318.474,"sdw":70.12,"ssw":177.15,"searn":530900,"sskus":7,"sdr":2.202,"swpp":45.496},{"co":"CASCADE","it":"starNecklace","gr":"\u2014","spcs":1,"snw":38.417,"sdw":13.47,"ssw":24.07,"searn":135000,"sskus":1,"sdr":3.506,"swpp":38.417},{"co":"CASCADE","it":"starNecklace2","gr":"CIRCLE OF LIFE","spcs":1,"snw":6.585,"sdw":0.91,"ssw":0.28,"searn":-11008,"sskus":1,"sdr":1.382,"swpp":6.585},{"co":"CASCADE","it":"starNecklace2","gr":"EVERY DAY","spcs":1,"snw":4.544,"sdw":0.52,"ssw":1.15,"searn":-5064,"sskus":1,"sdr":1.144,"swpp":4.544},{"co":"CASCADE","it":"starNecklace2","gr":"TANMANIYA","spcs":1,"snw":7.409,"sdw":2.06,"ssw":1.82,"searn":6100,"sskus":1,"sdr":2.78,"swpp":7.409},{"co":"CASCADE","it":"starNecklace2","gr":"\u2014","spcs":1,"snw":6.627,"sdw":2.8,"ssw":3.05,"searn":22600,"sskus":1,"sdr":4.225,"swpp":6.627},{"co":"CASCADE","it":"starPendant","gr":"\u2014","spcs":1,"snw":1.414,"sdw":0.72,"ssw":1.16,"searn":8300,"sskus":1,"sdr":5.092,"swpp":1.414},{"co":"ELEGANT","it":"Ring","gr":"\u2014","spcs":1,"snw":1.935,"sdw":0.35,"ssw":0.3,"searn":-1372,"sskus":1,"sdr":1.809,"swpp":1.935},{"co":"EVERGREENEX","it":"Earring","gr":"DANGLERS","spcs":1,"snw":24.376,"sdw":7.43,"ssw":89.65,"searn":362400,"sskus":1,"sdr":3.048,"swpp":24.376},{"co":"EVERGREENEX","it":"P Earring","gr":"COCKTAIL","spcs":1,"snw":5.052,"sdw":1.56,"ssw":19.0,"searn":134000,"sskus":1,"sdr":3.088,"swpp":5.052},{"co":"EVERGREENEX","it":"starPendant","gr":"COCKTAIL","spcs":1,"snw":5.584,"sdw":1.3,"ssw":18.36,"searn":124600,"sskus":1,"sdr":2.328,"swpp":5.584},{"co":"EVERGREENS","it":"BROOCH","gr":"COCKTAIL","spcs":2,"snw":20.871,"sdw":4.27,"ssw":15.83,"searn":95300,"sskus":2,"sdr":2.046,"swpp":10.436},{"co":"EVERGREENS","it":"BROOCH","gr":"EVERY DAY","spcs":1,"snw":4.901,"sdw":1.11,"ssw":5.01,"searn":32700,"sskus":1,"sdr":2.265,"swpp":4.901},{"co":"EVERGREENS","it":"BROOCH","gr":"\u2014","spcs":2,"snw":15.387,"sdw":9.77,"ssw":23.35,"searn":231400,"sskus":2,"sdr":6.35,"swpp":7.694},{"co":"EVERGREENS","it":"Bangle","gr":"COCKTAIL","spcs":2,"snw":74.58,"sdw":69.11,"ssw":49.92,"searn":940100,"sskus":2,"sdr":9.267,"swpp":37.29},{"co":"EVERGREENS","it":"Bracelet","gr":"SINGLE LINE","spcs":5,"snw":101.252,"sdw":15.86,"ssw":183.24,"searn":1149100,"sskus":5,"sdr":1.566,"swpp":20.25},{"co":"EVERGREENS","it":"Earring","gr":"COCKTAIL","spcs":9,"snw":131.492,"sdw":57.46,"ssw":204.61,"searn":1661400,"sskus":9,"sdr":4.37,"swpp":14.61},{"co":"EVERGREENS","it":"Earring","gr":"DANGLERS","spcs":2,"snw":12.818,"sdw":3.27,"ssw":14.46,"searn":95600,"sskus":2,"sdr":2.551,"swpp":6.409},{"co":"EVERGREENS","it":"Earring","gr":"JHUMKI","spcs":1,"snw":17.937,"sdw":5.99,"ssw":24.4,"searn":179900,"sskus":1,"sdr":3.339,"swpp":17.937},{"co":"EVERGREENS","it":"Earring","gr":"STUDS","spcs":22,"snw":235.065,"sdw":105.32,"ssw":393.93,"searn":3198700,"sskus":22,"sdr":4.48,"swpp":10.685},{"co":"EVERGREENS","it":"Half Bangle","gr":"CUFF","spcs":1,"snw":9.822,"sdw":3.22,"ssw":2.41,"searn":24100,"sskus":1,"sdr":3.278,"swpp":9.822},{"co":"EVERGREENS","it":"N Earring","gr":"COUTURE","spcs":3,"snw":35.415,"sdw":5.65,"ssw":78.88,"searn":506700,"sskus":3,"sdr":1.595,"swpp":11.805},{"co":"EVERGREENS","it":"N Earring","gr":"FUN","spcs":1,"snw":12.408,"sdw":1.18,"ssw":14.57,"searn":76400,"sskus":1,"sdr":0.951,"swpp":12.408},{"co":"EVERGREENS","it":"N Earring","gr":"MONO CHROME","spcs":13,"snw":246.8,"sdw":101.13,"ssw":462.81,"searn":3663400,"sskus":13,"sdr":4.098,"swpp":18.985},{"co":"EVERGREENS","it":"N Earring","gr":"MULTI LINERS","spcs":3,"snw":44.008,"sdw":16.91,"ssw":71.93,"searn":565600,"sskus":3,"sdr":3.842,"swpp":14.669},{"co":"EVERGREENS","it":"N Earring","gr":"\u2014","spcs":1,"snw":16.071,"sdw":5.43,"ssw":40.79,"searn":299300,"sskus":1,"sdr":3.379,"swpp":16.071},{"co":"EVERGREENS","it":"Necklace","gr":"COCKTAIL","spcs":2,"snw":115.644,"sdw":63.34,"ssw":230.29,"searn":2002000,"sskus":2,"sdr":5.477,"swpp":57.822},{"co":"EVERGREENS","it":"Necklace","gr":"MONO CHROME","spcs":2,"snw":86.676,"sdw":7.05,"ssw":292.3,"searn":1853300,"sskus":2,"sdr":0.813,"swpp":43.338},{"co":"EVERGREENS","it":"Necklace2","gr":"CLASSIC","spcs":1,"snw":5.727,"sdw":0.1,"ssw":4.16,"searn":10300,"sskus":1,"sdr":0.175,"swpp":5.727},{"co":"EVERGREENS","it":"Necklace2","gr":"COCKTAIL","spcs":4,"snw":23.162,"sdw":5.58,"ssw":18.49,"searn":115300,"sskus":4,"sdr":2.409,"swpp":5.79},{"co":"EVERGREENS","it":"Necklace2","gr":"EVERY DAY","spcs":12,"snw":82.094,"sdw":16.72,"ssw":79.31,"searn":468400,"sskus":12,"sdr":2.037,"swpp":6.841},{"co":"EVERGREENS","it":"Necklace2","gr":"FRONT BACK","spcs":1,"snw":5.771,"sdw":0.46,"ssw":7.21,"searn":35800,"sskus":1,"sdr":0.797,"swpp":5.771},{"co":"EVERGREENS","it":"Necklace2","gr":"STUDS","spcs":1,"snw":5.722,"sdw":1.95,"ssw":5.09,"searn":39000,"sskus":1,"sdr":3.408,"swpp":5.722},{"co":"EVERGREENS","it":"Ring","gr":"3 STONES","spcs":12,"snw":69.58,"sdw":10.65,"ssw":52.18,"searn":249600,"sskus":12,"sdr":1.531,"swpp":5.798},{"co":"EVERGREENS","it":"Ring","gr":"COCKTAIL","spcs":54,"snw":397.483,"sdw":137.23,"ssw":287.39,"searn":2267600,"sskus":54,"sdr":3.452,"swpp":7.361},{"co":"EVERGREENS","it":"Ring","gr":"EVERY DAY","spcs":8,"snw":54.502,"sdw":15.36,"ssw":45.7,"searn":313400,"sskus":8,"sdr":2.818,"swpp":6.813},{"co":"EVERGREENS","it":"Ring","gr":"FUN","spcs":3,"snw":20.286,"sdw":5.25,"ssw":10.45,"searn":65100,"sskus":3,"sdr":2.588,"swpp":6.762},{"co":"EVERGREENS","it":"Ring","gr":"OPEN RING","spcs":8,"snw":40.913,"sdw":8.75,"ssw":25.1,"searn":137700,"sskus":8,"sdr":2.139,"swpp":5.114},{"co":"EVERGREENS","it":"Ring","gr":"STUDS","spcs":1,"snw":8.895,"sdw":3.0,"ssw":4.12,"searn":33700,"sskus":1,"sdr":3.373,"swpp":8.895},{"co":"EVERGREENS","it":"Ring","gr":"\u2014","spcs":1,"snw":11.047,"sdw":3.19,"ssw":3.8,"searn":26200,"sskus":1,"sdr":2.888,"swpp":11.047},{"co":"EVERGREENS","it":"starNecklace","gr":"COUTURE","spcs":3,"snw":131.479,"sdw":24.88,"ssw":278.79,"searn":1829400,"sskus":3,"sdr":1.892,"swpp":43.826},{"co":"EVERGREENS","it":"starNecklace","gr":"FUN","spcs":1,"snw":48.995,"sdw":4.53,"ssw":58.28,"searn":305500,"sskus":1,"sdr":0.925,"swpp":48.995},{"co":"EVERGREENS","it":"starNecklace","gr":"MONO CHROME","spcs":13,"snw":924.288,"sdw":370.74,"ssw":1338.15,"searn":10858400,"sskus":13,"sdr":4.011,"swpp":71.099},{"co":"EVERGREENS","it":"starNecklace","gr":"MULTI LINERS","spcs":3,"snw":230.195,"sdw":93.41,"ssw":306.88,"searn":2532500,"sskus":3,"sdr":4.058,"swpp":76.732},{"co":"EVERGREENS","it":"starNecklace","gr":"\u2014","spcs":1,"snw":85.93,"sdw":32.6,"ssw":164.4,"searn":1267000,"sskus":1,"sdr":3.794,"swpp":85.93},{"co":"EVERGREENS2","it":"BROOCH","gr":"\u2014","spcs":1,"snw":6.424,"sdw":0.84,"ssw":18.91,"searn":121900,"sskus":1,"sdr":1.308,"swpp":6.424},{"co":"EVERGREENS2","it":"Earring","gr":"COCKTAIL","spcs":1,"snw":11.296,"sdw":8.54,"ssw":100.86,"searn":769000,"sskus":1,"sdr":7.56,"swpp":11.296},{"co":"EVERGREENS2","it":"Earring","gr":"STUDS","spcs":2,"snw":21.621,"sdw":10.12,"ssw":26.76,"searn":233100,"sskus":2,"sdr":4.681,"swpp":10.81},{"co":"EVERGREENS2","it":"Ring","gr":"COCKTAIL","spcs":1,"snw":8.406,"sdw":4.51,"ssw":3.9,"searn":52000,"sskus":1,"sdr":5.365,"swpp":8.406},{"co":"EVERGREENS2","it":"starNecklace","gr":"CLASSIC","spcs":1,"snw":43.509,"sdw":5.83,"ssw":115.27,"searn":737600,"sskus":1,"sdr":1.34,"swpp":43.509},{"co":"MOONLIGHT","it":"BROOCH","gr":"CLASSIC","spcs":1,"snw":5.022,"sdw":3.08,"ssw":0.0,"searn":20900,"sskus":1,"sdr":6.133,"swpp":5.022},{"co":"MOONLIGHT","it":"BROOCH","gr":"SINGLE LINE","spcs":1,"snw":6.472,"sdw":6.36,"ssw":0.0,"searn":55600,"sskus":1,"sdr":9.827,"swpp":6.472},{"co":"MOONLIGHT","it":"BROOCH","gr":"\u2014","spcs":1,"snw":4.07,"sdw":3.81,"ssw":0.0,"searn":32700,"sskus":1,"sdr":9.361,"swpp":4.07},{"co":"MOONLIGHT","it":"Bangle","gr":"SINGLE LINE","spcs":6,"snw":106.873,"sdw":52.57,"ssw":0.0,"searn":288700,"sskus":6,"sdr":4.919,"swpp":17.812},{"co":"MOONLIGHT","it":"Bracelet","gr":"2-3 LINERS","spcs":4,"snw":73.581,"sdw":36.54,"ssw":0.0,"searn":203000,"sskus":4,"sdr":4.966,"swpp":18.395},{"co":"MOONLIGHT","it":"Bracelet","gr":"COCKTAIL","spcs":1,"snw":18.609,"sdw":12.19,"ssw":0.0,"searn":86700,"sskus":1,"sdr":6.551,"swpp":18.609},{"co":"MOONLIGHT","it":"Bracelet","gr":"SINGLE LINE","spcs":11,"snw":86.843,"sdw":69.46,"ssw":0.0,"searn":555800,"sskus":11,"sdr":7.998,"swpp":7.895},{"co":"MOONLIGHT","it":"Bracelet","gr":"\u2014","spcs":1,"snw":6.563,"sdw":4.51,"ssw":0.0,"searn":33100,"sskus":1,"sdr":6.872,"swpp":6.563},{"co":"MOONLIGHT","it":"Earring","gr":"BALI - HOOPS","spcs":9,"snw":59.788,"sdw":23.68,"ssw":0.0,"searn":74947,"sskus":9,"sdr":3.961,"swpp":6.643},{"co":"MOONLIGHT","it":"Earring","gr":"CHANDBALI","spcs":5,"snw":111.692,"sdw":58.5,"ssw":0.0,"searn":311100,"sskus":5,"sdr":5.238,"swpp":22.338},{"co":"MOONLIGHT","it":"Earring","gr":"COCKTAIL","spcs":7,"snw":67.662,"sdw":25.08,"ssw":0.0,"searn":64076,"sskus":7,"sdr":3.707,"swpp":9.666},{"co":"MOONLIGHT","it":"Earring","gr":"DANGLERS","spcs":3,"snw":31.367,"sdw":16.14,"ssw":0.0,"searn":84000,"sskus":3,"sdr":5.146,"swpp":10.456},{"co":"MOONLIGHT","it":"Earring","gr":"FRONT BACK","spcs":12,"snw":110.117,"sdw":53.53,"ssw":0.0,"searn":256982,"sskus":12,"sdr":4.861,"swpp":9.176},{"co":"MOONLIGHT","it":"Earring","gr":"JHUMKI","spcs":2,"snw":48.98,"sdw":22.71,"ssw":0.0,"searn":101100,"sskus":2,"sdr":4.637,"swpp":24.49},{"co":"MOONLIGHT","it":"Earring","gr":"STUDS","spcs":21,"snw":165.831,"sdw":85.6,"ssw":0.0,"searn":446757,"sskus":21,"sdr":5.162,"swpp":7.897},{"co":"MOONLIGHT","it":"Half Bangle","gr":"2-3 LINERS","spcs":6,"snw":114.27,"sdw":40.81,"ssw":0.0,"searn":123962,"sskus":6,"sdr":3.571,"swpp":19.045},{"co":"MOONLIGHT","it":"Half Bangle","gr":"COCKTAIL","spcs":2,"snw":31.884,"sdw":11.47,"ssw":0.0,"searn":35600,"sskus":2,"sdr":3.597,"swpp":15.942},{"co":"MOONLIGHT","it":"Half Bangle","gr":"CUFF","spcs":4,"snw":92.86,"sdw":37.09,"ssw":0.0,"searn":147951,"sskus":4,"sdr":3.994,"swpp":23.215},{"co":"MOONLIGHT","it":"Half Bangle","gr":"SINGLE LINE","spcs":4,"snw":59.554,"sdw":17.36,"ssw":0.0,"searn":17731,"sskus":4,"sdr":2.915,"swpp":14.888},{"co":"MOONLIGHT","it":"N EARRING 2","gr":"CLASSIC","spcs":1,"snw":5.103,"sdw":2.06,"ssw":0.0,"searn":6900,"sskus":1,"sdr":4.037,"swpp":5.103},{"co":"MOONLIGHT","it":"N EARRING 2","gr":"EVERY DAY","spcs":2,"snw":16.812,"sdw":6.9,"ssw":0.0,"searn":23900,"sskus":2,"sdr":4.104,"swpp":8.406},{"co":"MOONLIGHT","it":"N Earring","gr":"CLASSIC","spcs":3,"snw":22.869,"sdw":8.85,"ssw":0.0,"searn":33000,"sskus":3,"sdr":3.87,"swpp":7.623},{"co":"MOONLIGHT","it":"N Earring","gr":"COUTURE","spcs":3,"snw":20.525,"sdw":14.66,"ssw":0.0,"searn":110300,"sskus":3,"sdr":7.143,"swpp":6.842},{"co":"MOONLIGHT","it":"N Earring","gr":"FUN","spcs":1,"snw":10.795,"sdw":3.93,"ssw":0.0,"searn":12600,"sskus":1,"sdr":3.641,"swpp":10.795},{"co":"MOONLIGHT","it":"N Earring","gr":"MULTI LINERS","spcs":4,"snw":40.578,"sdw":14.86,"ssw":0.0,"searn":48500,"sskus":4,"sdr":3.662,"swpp":10.144},{"co":"MOONLIGHT","it":"N Earring","gr":"\u2014","spcs":1,"snw":3.225,"sdw":1.51,"ssw":0.0,"searn":7800,"sskus":1,"sdr":4.682,"swpp":3.225},{"co":"MOONLIGHT","it":"Necklace","gr":"CLASSIC","spcs":1,"snw":13.582,"sdw":6.38,"ssw":0.0,"searn":33100,"sskus":1,"sdr":4.697,"swpp":13.582},{"co":"MOONLIGHT","it":"Necklace","gr":"COUTURE","spcs":1,"snw":58.828,"sdw":27.05,"ssw":0.0,"searn":136400,"sskus":1,"sdr":4.598,"swpp":58.828},{"co":"MOONLIGHT","it":"Necklace2","gr":"CIRCLE OF LIFE","spcs":1,"snw":5.348,"sdw":1.49,"ssw":0.0,"searn":-838,"sskus":1,"sdr":2.786,"swpp":5.348},{"co":"MOONLIGHT","it":"Necklace2","gr":"COCKTAIL","spcs":2,"snw":17.635,"sdw":7.58,"ssw":0.0,"searn":29238,"sskus":2,"sdr":4.298,"swpp":8.818},{"co":"MOONLIGHT","it":"Necklace2","gr":"EVERY DAY","spcs":6,"snw":32.731,"sdw":11.74,"ssw":0.0,"searn":26364,"sskus":6,"sdr":3.587,"swpp":5.455},{"co":"MOONLIGHT","it":"Necklace2","gr":"TANMANIYA","spcs":1,"snw":5.987,"sdw":1.53,"ssw":0.0,"searn":-2594,"sskus":1,"sdr":2.556,"swpp":5.987},{"co":"MOONLIGHT","it":"Nose Pin","gr":"\u2014","spcs":1,"snw":8.879,"sdw":4.26,"ssw":0.0,"searn":20000,"sskus":1,"sdr":4.798,"swpp":8.879},{"co":"MOONLIGHT","it":"Ring","gr":"3 STONES","spcs":1,"snw":10.154,"sdw":1.04,"ssw":0.0,"searn":-23059,"sskus":1,"sdr":1.024,"swpp":10.154},{"co":"MOONLIGHT","it":"Ring","gr":"BAND","spcs":26,"snw":140.208,"sdw":59.34,"ssw":0.0,"searn":221665,"sskus":26,"sdr":4.232,"swpp":5.393},{"co":"MOONLIGHT","it":"Ring","gr":"COCKTAIL","spcs":15,"snw":111.015,"sdw":48.96,"ssw":0.0,"searn":198864,"sskus":15,"sdr":4.41,"swpp":7.401},{"co":"MOONLIGHT","it":"Ring","gr":"EVERY DAY","spcs":10,"snw":60.165,"sdw":18.98,"ssw":0.0,"searn":17092,"sskus":10,"sdr":3.155,"swpp":6.016},{"co":"MOONLIGHT","it":"Ring","gr":"FUN","spcs":4,"snw":24.514,"sdw":7.93,"ssw":0.0,"searn":9395,"sskus":4,"sdr":3.235,"swpp":6.128},{"co":"MOONLIGHT","it":"Ring","gr":"OPEN RING","spcs":10,"snw":46.926,"sdw":16.08,"ssw":0.0,"searn":28738,"sskus":10,"sdr":3.427,"swpp":4.693},{"co":"MOONLIGHT","it":"Ring","gr":"\u2014","spcs":2,"snw":11.273,"sdw":4.54,"ssw":0.0,"searn":15000,"sskus":2,"sdr":4.027,"swpp":5.636},{"co":"MOONLIGHT","it":"starNecklace","gr":"CLASSIC","spcs":3,"snw":71.274,"sdw":30.68,"ssw":0.0,"searn":140100,"sskus":3,"sdr":4.305,"swpp":23.758},{"co":"MOONLIGHT","it":"starNecklace","gr":"COUTURE","spcs":1,"snw":30.13,"sdw":20.54,"ssw":0.0,"searn":150100,"sskus":1,"sdr":6.817,"swpp":30.13},{"co":"MOONLIGHT","it":"starNecklace","gr":"MULTI LINERS","spcs":4,"snw":161.986,"sdw":71.7,"ssw":0.0,"searn":342083,"sskus":4,"sdr":4.426,"swpp":40.496},{"co":"MOONLIGHT","it":"starNecklace2","gr":"CLASSIC","spcs":1,"snw":4.922,"sdw":1.3,"ssw":0.0,"searn":-1627,"sskus":1,"sdr":2.641,"swpp":4.922},{"co":"MOONLIGHT","it":"starNecklace2","gr":"EVERY DAY","spcs":2,"snw":10.386,"sdw":4.05,"ssw":0.0,"searn":12200,"sskus":2,"sdr":3.899,"swpp":5.193},{"co":"NAVRATNA","it":"Bracelet","gr":"DANGLERS","spcs":1,"snw":10.6,"sdw":2.54,"ssw":4.9,"searn":16200,"sskus":1,"sdr":2.396,"swpp":10.6},{"co":"NAVRATNA","it":"N Earring","gr":"\u2014","spcs":2,"snw":11.413,"sdw":1.91,"ssw":5.9,"searn":10000,"sskus":2,"sdr":1.674,"swpp":5.706},{"co":"NAVRATNA","it":"P Earring","gr":"\u2014","spcs":1,"snw":6.556,"sdw":1.5,"ssw":7.65,"searn":25700,"sskus":1,"sdr":2.288,"swpp":6.556},{"co":"SEA GREEN","it":"Bracelet","gr":"COCKTAIL","spcs":1,"snw":42.472,"sdw":38.92,"ssw":14.34,"searn":1048100,"sskus":1,"sdr":9.164,"swpp":42.472},{"co":"SEA GREEN","it":"Earring","gr":"DANGLERS","spcs":1,"snw":11.966,"sdw":1.8,"ssw":56.1,"searn":2784700,"sskus":1,"sdr":1.504,"swpp":11.966},{"co":"SEA GREEN","it":"Ring","gr":"3 STONES","spcs":2,"snw":19.506,"sdw":2.84,"ssw":35.5,"searn":1740800,"sskus":2,"sdr":1.456,"swpp":9.753},{"co":"SEA GREEN","it":"Ring","gr":"COCKTAIL","spcs":2,"snw":18.839,"sdw":6.41,"ssw":18.21,"searn":921500,"sskus":2,"sdr":3.403,"swpp":9.42},{"co":"SYMPHONY","it":"Bracelet","gr":"SINGLE LINE","spcs":1,"snw":11.142,"sdw":2.57,"ssw":13.08,"searn":47500,"sskus":1,"sdr":2.307,"swpp":11.142},{"co":"SYMPHONY","it":"Earring","gr":"BALI - HOOPS","spcs":1,"snw":9.927,"sdw":1.87,"ssw":3.32,"searn":1000,"sskus":1,"sdr":1.884,"swpp":9.927},{"co":"SYMPHONY","it":"Earring","gr":"COCKTAIL","spcs":1,"snw":31.364,"sdw":1.33,"ssw":38.28,"searn":59300,"sskus":1,"sdr":0.424,"swpp":31.364},{"co":"SYMPHONY","it":"Earring","gr":"STUDS","spcs":5,"snw":53.189,"sdw":10.56,"ssw":54.91,"searn":160100,"sskus":5,"sdr":1.985,"swpp":10.638},{"co":"SYMPHONY","it":"Half Bangle","gr":"2-3 LINERS","spcs":1,"snw":23.315,"sdw":4.51,"ssw":6.51,"searn":5600,"sskus":1,"sdr":1.934,"swpp":23.315},{"co":"SYMPHONY","it":"Ring","gr":"3 STONES","spcs":2,"snw":8.664,"sdw":0.81,"ssw":7.05,"searn":7600,"sskus":2,"sdr":0.935,"swpp":4.332},{"co":"SYMPHONY","it":"Ring","gr":"COCKTAIL","spcs":4,"snw":30.295,"sdw":4.68,"ssw":27.0,"searn":58100,"sskus":4,"sdr":1.545,"swpp":7.574},{"co":"SYMPHONY","it":"Ring","gr":"OPEN RING","spcs":4,"snw":24.685,"sdw":3.14,"ssw":20.46,"searn":33100,"sskus":4,"sdr":1.272,"swpp":6.171}];
@@ -1751,9 +1779,11 @@ ANNUAL_AVG.forEach(function(r){
 // Exact Collection+Item+Group combo first; fallback to Collection-level if combo has no sales history.
 var GA_EPG_BY_COMBO={};  // co|it|gr -> total earning / total net weight
 var GA_EPG_BY_COLL={};   // co -> total earning / total net weight
-(function(){
+function gaBuildEpgLookups(years){
+  var yrSet=(years&&years.length)?new Set(years):null;
   var comboAgg={}, collAgg={};
   R.forEach(function(r){
+    if(yrSet&&r.d&&!yrSet.has(r.d.slice(0,4)))return;
     var gr=r.gr||'-'; if(gr==='-'||gr==='')gr='—';
     var ck=r.co+'|'+r.it+'|'+gr;
     if(!comboAgg[ck])comboAgg[ck]={e:0,nw:0};
@@ -1761,9 +1791,12 @@ var GA_EPG_BY_COLL={};   // co -> total earning / total net weight
     if(!collAgg[r.co])collAgg[r.co]={e:0,nw:0};
     collAgg[r.co].e+=r.e; collAgg[r.co].nw+=r.nw;
   });
+  GA_EPG_BY_COMBO={};
+  GA_EPG_BY_COLL={};
   Object.keys(comboAgg).forEach(function(k){var a=comboAgg[k];GA_EPG_BY_COMBO[k]=a.nw>0?a.e/a.nw:0;});
   Object.keys(collAgg).forEach(function(k){var a=collAgg[k];GA_EPG_BY_COLL[k]=a.nw>0?a.e/a.nw:0;});
-})();
+}
+gaBuildEpgLookups(null);
 function gaEpgFor(co,it,gr){
   var ck=co+'|'+it+'|'+(gr||'—');
   if(GA_EPG_BY_COMBO[ck])return GA_EPG_BY_COMBO[ck];
@@ -1772,27 +1805,124 @@ function gaEpgFor(co,it,gr){
 
 function initGA(){
   var MNS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var sel=document.getElementById('ga-mo');
-  MNS.forEach(function(n,i){var o=document.createElement('option');o.value=i+1;o.textContent=n;sel.appendChild(o);});
-  document.getElementById('ga-go').addEventListener('click',gaCalc);
-  document.getElementById('ga-mo').addEventListener('change',function(){
-    gaSt.month=parseInt(this.value)||1;
-    gaInitAlloc();
-    gaRenderSliders();
-    gaCalc();
+  var YRS=['2023','2024','2025','2026'];
+
+  // Build month checkboxes
+  var moChecksEl=document.getElementById('ga-mo-checks');
+  MNS.forEach(function(n,i){
+    var mNum=String(i+1);
+    var lbl=document.createElement('label');
+    lbl.style.cssText='display:flex;align-items:center;gap:5px;font-size:11px;padding:3px 4px;cursor:pointer;border-radius:5px;';
+    lbl.innerHTML='<input type="checkbox" class="ga-mo-cb" value="'+mNum+'"'+(i===0?' checked':'')+' style="cursor:pointer;"> '+n;
+    moChecksEl.appendChild(lbl);
   });
-  document.getElementById('ga-xlsx').addEventListener('click',gaExportExcel);
-  document.getElementById('ga-tgt').addEventListener('change',function(){
+
+  // Build year checkboxes
+  var yrChecksEl=document.getElementById('ga-yr-checks');
+  YRS.forEach(function(y){
+    var lbl=document.createElement('label');
+    lbl.style.cssText='display:flex;align-items:center;gap:5px;font-size:11px;padding:3px 4px;cursor:pointer;border-radius:5px;';
+    lbl.innerHTML='<input type="checkbox" class="ga-yr-cb" value="'+y+'" checked style="cursor:pointer;"> '+y;
+    yrChecksEl.appendChild(lbl);
+  });
+
+  gaSt.months=['1'];
+  gaSt.years=YRS.slice();
+
+  function gaUpdateMoBtnLabel(){
+    var checked=Array.prototype.slice.call(document.querySelectorAll('.ga-mo-cb:checked'));
+    var btn=document.getElementById('ga-mo-btn');
+    if(checked.length===12)btn.textContent='All Months ▾';
+    else if(checked.length===0)btn.textContent='No Months ▾';
+    else if(checked.length<=3)btn.textContent=checked.map(function(c){return MNS[parseInt(c.value)-1];}).join(', ')+' ▾';
+    else btn.textContent=checked.length+' Months ▾';
+  }
+  function gaUpdateYrBtnLabel(){
+    var checked=Array.prototype.slice.call(document.querySelectorAll('.ga-yr-cb:checked'));
+    var btn=document.getElementById('ga-yr-btn');
+    if(checked.length===4)btn.textContent='All Years ▾';
+    else if(checked.length===0)btn.textContent='No Years ▾';
+    else btn.textContent=checked.map(function(c){return c.value;}).join(', ')+' ▾';
+  }
+
+  document.getElementById('ga-mo-btn').addEventListener('click',function(e){
+    e.stopPropagation();
+    document.getElementById('ga-mo-panel').style.display=document.getElementById('ga-mo-panel').style.display==='none'?'block':'none';
+    document.getElementById('ga-yr-panel').style.display='none';
+  });
+  document.getElementById('ga-yr-btn').addEventListener('click',function(e){
+    e.stopPropagation();
+    document.getElementById('ga-yr-panel').style.display=document.getElementById('ga-yr-panel').style.display==='none'?'block':'none';
+    document.getElementById('ga-mo-panel').style.display='none';
+  });
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('#ga-mo-panel')&&!e.target.closest('#ga-mo-btn'))document.getElementById('ga-mo-panel').style.display='none';
+    if(!e.target.closest('#ga-yr-panel')&&!e.target.closest('#ga-yr-btn'))document.getElementById('ga-yr-panel').style.display='none';
+  });
+
+  document.querySelectorAll('.ga-mo-cb').forEach(function(cb){
+    cb.addEventListener('change',function(){
+      gaSt.months=Array.prototype.slice.call(document.querySelectorAll('.ga-mo-cb:checked')).map(function(c){return c.value;});
+      gaUpdateMoBtnLabel();
+      gaInitAlloc();
+      gaRenderSliders();
+      gaCalc();
+    });
+  });
+  document.querySelectorAll('.ga-yr-cb').forEach(function(cb){
+    cb.addEventListener('change',function(){
+      gaSt.years=Array.prototype.slice.call(document.querySelectorAll('.ga-yr-cb:checked')).map(function(c){return c.value;});
+      gaUpdateYrBtnLabel();
+      gaCalc();
+    });
+  });
+
+  document.getElementById('ga-mo-all').addEventListener('click',function(){
+    document.querySelectorAll('.ga-mo-cb').forEach(function(c){c.checked=true;});
+    gaSt.months=MNS.map(function(n,i){return String(i+1);});
+    gaUpdateMoBtnLabel();gaInitAlloc();gaRenderSliders();gaCalc();
+  });
+  document.getElementById('ga-mo-none').addEventListener('click',function(){
+    document.querySelectorAll('.ga-mo-cb').forEach(function(c){c.checked=false;});
+    gaSt.months=[];
+    gaUpdateMoBtnLabel();gaInitAlloc();gaRenderSliders();gaCalc();
+  });
+  document.getElementById('ga-yr-all').addEventListener('click',function(){
+    document.querySelectorAll('.ga-yr-cb').forEach(function(c){c.checked=true;});
+    gaSt.years=YRS.slice();
+    gaUpdateYrBtnLabel();gaCalc();
+  });
+  document.getElementById('ga-yr-none').addEventListener('click',function(){
+    document.querySelectorAll('.ga-yr-cb').forEach(function(c){c.checked=false;});
+    gaSt.years=[];
+    gaUpdateYrBtnLabel();gaCalc();
+  });
+
+  var tgtSl=document.getElementById('ga-tgt-sl');
+  var tgtLbl=document.getElementById('ga-tgt-lbl');
+  function gaSliderFill(sl){
+    var v=parseFloat(sl.value), mn=parseFloat(sl.min), mx=parseFloat(sl.max);
+    var pct=mx>mn?((v-mn)/(mx-mn)*100):0;
+    sl.style.background='linear-gradient(to right,var(--ac) '+pct+'%,#e8e0d8 '+pct+'%)';
+  }
+  tgtSl.addEventListener('input',function(){
+    tgtLbl.textContent=Number(this.value).toLocaleString()+'g';
+    gaSliderFill(this);
     gaUpdateAllocBar();
     gaCalc();
   });
+
+  document.getElementById('ga-go').addEventListener('click',gaCalc);
+  document.getElementById('ga-xlsx').addEventListener('click',gaExportExcel);
   document.getElementById('ga-reset-alloc').addEventListener('click',function(){
     gaInitAlloc();
     gaRenderSliders();
     gaCalc();
   });
 
-  gaSt.month=1;
+  gaSliderFill(tgtSl);
+  gaUpdateMoBtnLabel();
+  gaUpdateYrBtnLabel();
   gaInitAlloc();
   gaRenderSliders();
 
@@ -1893,8 +2023,44 @@ function gaFilter2(){
   gaRender();
 }
 
+function gaMergedMonthData(){
+  var months=(gaSt.months&&gaSt.months.length)?gaSt.months:['1'];
+  var merged={colls:{}};
+  months.forEach(function(mKey){
+    var md=SG_MONTHLY.months[mKey];
+    if(!md)return;
+    Object.keys(md.colls).forEach(function(co){
+      var cd=md.colls[co];
+      if(!merged.colls[co])merged.colls[co]={total_nw:0,total_e:0,items:{}};
+      merged.colls[co].total_nw+=cd.total_nw;
+      merged.colls[co].total_e+=cd.total_e;
+      cd.items.forEach(function(it){
+        var ik=it.it+'|'+it.gr;
+        if(!merged.colls[co].items[ik]){
+          merged.colls[co].items[ik]={it:it.it,gr:it.gr,pcs:0,nw:0,dw:0,e:0,wppSum:0,wppCnt:0,drSum:0,drCnt:0};
+        }
+        var m=merged.colls[co].items[ik];
+        m.pcs+=it.pcs; m.nw+=it.nw; m.dw+=it.dw; m.e+=it.e;
+        m.wppSum+=it.wpp; m.wppCnt++;
+        m.drSum+=it.dr; m.drCnt++;
+      });
+    });
+  });
+  Object.keys(merged.colls).forEach(function(co){
+    var itemsArr=Object.keys(merged.colls[co].items).map(function(ik){
+      var m=merged.colls[co].items[ik];
+      var wpp=m.wppCnt>0?m.wppSum/m.wppCnt:0;
+      var dr=m.drCnt>0?m.drSum/m.drCnt:0;
+      var ae=m.pcs>0?Math.round(m.e/m.pcs):0;
+      return {it:m.it,gr:m.gr,pcs:m.pcs,nw:m.nw,dw:m.dw,dr:dr,ae:ae,e:m.e,wpp:wpp};
+    });
+    merged.colls[co].items=itemsArr;
+  });
+  return merged;
+}
+
 function gaInitAlloc(){
-  var md=SG_MONTHLY.months[String(gaSt.month)];
+  var md=gaMergedMonthData();
   var totalWt=0;
   SG_COLLS.forEach(function(co){totalWt+=(md.colls[co]?md.colls[co].total_nw:0);});
   SG_COLLS.forEach(function(co){
@@ -1906,7 +2072,7 @@ function gaInitAlloc(){
 }
 
 function gaRenderSliders(){
-  var md=SG_MONTHLY.months[String(gaSt.month)];
+  var md=gaMergedMonthData();
   var rows='';
   SG_COLLS.forEach(function(co){
     var color=SG_COLORS[co]||'#c9a96e';
@@ -1990,7 +2156,7 @@ function gaOnSlide(co,val){
 
 function gaUpdateAllocBar(){
   var tot=SG_COLLS.reduce(function(s,co){return s+(gaSt.alloc[co]||0);},0);
-  var tgt=parseFloat(document.getElementById('ga-tgt').value)||10000;
+  var tgt=parseFloat(document.getElementById('ga-tgt-sl').value)||10000;
   document.getElementById('ga-total-wt').textContent=(tgt*tot/100).toFixed(0)+'g';
   document.getElementById('ga-target-disp').textContent=Number(tgt).toLocaleString()+'g';
   SG_COLLS.forEach(function(co){
@@ -2001,9 +2167,9 @@ function gaUpdateAllocBar(){
 }
 
 function gaCalc(){
-  var mo  =gaSt.month;
-  var tgt =parseFloat(document.getElementById('ga-tgt').value)||10000;
-  var md  =SG_MONTHLY.months[String(mo)];
+  var tgt =parseFloat(document.getElementById('ga-tgt-sl').value)||10000;
+  var md  =gaMergedMonthData();
+  gaBuildEpgLookups(gaSt.years);
   gaUpdateAllocBar();
 
   // Build suggestion plan using slider-based allocations (not fixed historical %)
@@ -2053,7 +2219,7 @@ function gaCalc(){
   var collEarn={};
   rows.forEach(function(r){
     if(!collEarn[r.co])collEarn[r.co]=0;
-    collEarn[r.co]+=r.spcs*r.ae;
+    collEarn[r.co]+=r.snw*r.epg;
   });
   SG_COLLS.forEach(function(co){
     var coKey=co.replace(/ /g,'_');
@@ -2067,21 +2233,19 @@ function gaCalc(){
 function gaKPI(rows){
   var miss=rows.filter(function(r){return r.dnw<0;});
   var exc =rows.filter(function(r){return r.dnw>0;});
-  var ok  =rows.filter(function(r){return r.dnw===0;});
   var mNW =miss.reduce(function(s,r){return s-r.dnw;},0);
   var eNW =exc .reduce(function(s,r){return s+r.dnw;},0);
   var tCNW=rows.reduce(function(s,r){return s+r.cnw;},0);
   var tSNW=rows.reduce(function(s,r){return s+r.snw;},0);
-  var tANW=rows.reduce(function(s,r){return s+r.anw;},0);
   var mEI =miss.reduce(function(s,r){return s+Math.abs(r.ei);},0);
   var eEI =exc .reduce(function(s,r){return s+r.ei;},0);
+  var tSuggEarn=rows.reduce(function(s,r){return s+r.snw*r.epg;},0);
   document.getElementById('ga-kpi').innerHTML=
     '<div class="sc"><div class="lb2">&#x1F4E6; Current Stock</div><div class="v" style="font-size:16px;">'+(tCNW/1000).toFixed(2)+' kg</div><div class="sub">'+tCNW.toFixed(0)+'g on hand</div></div>'+
     '<div class="sc" style="border-left:3px solid var(--ac);"><div class="lb2">&#x1F3AF; Suggested Plan</div><div class="v" style="font-size:16px;">'+(tSNW/1000).toFixed(2)+' kg</div><div class="sub">Based on target weight</div></div>'+
-    '<div class="sc" style="border-left:3px solid #5ea8c9;"><div class="lb2">&#x1F4C5; Annual Avg Sales</div><div class="v" style="font-size:16px;">'+(tANW/1000).toFixed(2)+' kg</div><div class="sub">Avg yearly offtake</div></div>'+
+    '<div class="sc" style="border-left:3px solid #c9a96e;"><div class="lb2">&#x1F4B0; Total Earning (Suggested Plan)</div><div class="v gold" style="font-size:16px;">'+fmt(tSuggEarn)+'</div><div class="sub">Per slider allocation</div></div>'+
     '<div class="sc" style="border-left:3px solid #27ae60;"><div class="lb2">&#x2B06; Missing</div><div class="v" style="font-size:18px;color:#1a7a4a;">'+miss.length+'</div><div class="sub">'+mNW.toFixed(0)+'g short &bull; '+fmt(mEI)+' potential</div></div>'+
-    '<div class="sc" style="border-left:3px solid #c0392b;"><div class="lb2">&#x2B07; Excess</div><div class="v" style="font-size:18px;color:#c0392b;">'+exc.length+'</div><div class="sub">'+eNW.toFixed(0)+'g excess &bull; '+fmt(eEI)+' locked</div></div>'+
-    '<div class="sc"><div class="lb2">&#x2714; Balanced</div><div class="v" style="font-size:18px;">'+ok.length+'</div><div class="sub">at target level</div></div>';
+    '<div class="sc" style="border-left:3px solid #c0392b;"><div class="lb2">&#x2B07; Excess</div><div class="v" style="font-size:18px;color:#c0392b;">'+exc.length+'</div><div class="sub">'+eNW.toFixed(0)+'g excess &bull; '+fmt(eEI)+' locked</div></div>';
 }
 
 var gaExpandCo={};
@@ -2266,8 +2430,8 @@ function gaExportExcel(){
   var wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Stock Gap Analysis');
 
-  var mo=document.getElementById('ga-mo').selectedOptions[0]?document.getElementById('ga-mo').selectedOptions[0].textContent:'';
-  var tgt=document.getElementById('ga-tgt').value;
+  var mo=(document.getElementById('ga-mo-btn').textContent||'').replace(' ▾','').replace(/\s/g,'');
+  var tgt=document.getElementById('ga-tgt-sl').value;
   var fname='VJI_Stock_Gap_Analysis_'+mo+'_'+tgt+'g_'+new Date().toISOString().slice(0,10)+'.xlsx';
   XLSX.writeFile(wb,fname);
 }
