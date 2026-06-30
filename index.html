@@ -2409,7 +2409,9 @@ document.getElementById('ga-body').addEventListener('click',function(e){
 
 function gaExportExcel(){
   if(typeof XLSX==='undefined'){alert('Excel export library failed to load. Please check your internet connection and try again.');return;}
-  var data=gaSt.filt.length?gaSt.filt:gaSt.data;
+  // Always export the FULL slider-driven dataset, not the on-screen view/search filtered subset
+  var data=gaSt.data;
+  if(!data||!data.length){alert('No data to export. Please wait for the analysis to finish calculating.');return;}
   var rows=[];
   rows.push(['Collection','Item','Group','Suggested PCS','Stock PCS','Δ PCS','Suggested Wt (g)','Stock Wt (g)','Δ Wt (g)','Earning/g','Dia Ratio','Earning Impact','Status']);
   data.forEach(function(r){
