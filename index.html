@@ -2157,12 +2157,18 @@ function gaOnSlide(co,val){
 function gaUpdateAllocBar(){
   var tot=SG_COLLS.reduce(function(s,co){return s+(gaSt.alloc[co]||0);},0);
   var tgt=parseFloat(document.getElementById('ga-tgt-sl').value)||10000;
-  document.getElementById('ga-total-wt').textContent=(tgt*tot/100).toFixed(0)+'g';
+  var haveData=gaSt.data&&gaSt.data.length;
+  var actualWt=haveData?gaSt.data.reduce(function(s,r){return s+r.snw;},0):tgt*tot/100;
+  document.getElementById('ga-total-wt').textContent=actualWt.toFixed(0)+'g';
   document.getElementById('ga-target-disp').textContent=Number(tgt).toLocaleString()+'g';
+  var collWt={};
+  if(haveData){
+    gaSt.data.forEach(function(r){collWt[r.co]=(collWt[r.co]||0)+r.snw;});
+  }
   SG_COLLS.forEach(function(co){
     var coKey=co.replace(/ /g,'_');
     var wtEl=document.getElementById('gal-wt-'+coKey);
-    if(wtEl)wtEl.textContent=(tgt*(gaSt.alloc[co]||0)/100).toFixed(0)+'g';
+    if(wtEl)wtEl.textContent=(haveData?(collWt[co]||0):(tgt*(gaSt.alloc[co]||0)/100)).toFixed(0)+'g';
   });
 }
 
@@ -2170,7 +2176,6 @@ function gaCalc(){
   var tgt =parseFloat(document.getElementById('ga-tgt-sl').value)||10000;
   var md  =gaMergedMonthData();
   gaBuildEpgLookups(gaSt.years);
-  gaUpdateAllocBar();
 
   // Build suggestion plan using slider-based allocations (not fixed historical %)
   var plan={};
@@ -2214,6 +2219,7 @@ function gaCalc(){
   gaSt.data=rows;
   gaFilter2();
   gaKPI(rows);
+  gaUpdateAllocBar();
 
   // Update per-collection suggested earning labels on sliders
   var collEarn={};
