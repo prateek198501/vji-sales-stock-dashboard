@@ -443,27 +443,6 @@ tbody td{padding:10px 14px;vertical-align:middle;}
         <button class="mc" id="ga-reset-alloc" style="margin-top:8px;">&#x21BA; Reset to historical proportions</button>
       </div>
 
-      <!-- Suggested Earning by Collection -->
-      <div class="tc" style="margin-bottom:20px;">
-        <div class="tch">
-          <div class="tct">&#x1F4B0; Suggested Earning by Collection</div>
-          <span class="cb" id="ga-earn-total"></span>
-        </div>
-        <div class="tsc"><table style="font-size:12px;">
-          <thead><tr>
-            <th>Collection</th>
-            <th style="text-align:right;">Allocation %</th>
-            <th style="text-align:right;">Suggested Wt</th>
-            <th style="text-align:right;">Suggested PCS</th>
-            <th style="text-align:right;">Suggested Earning</th>
-            <th style="text-align:right;">Earn / g</th>
-            <th>Share</th>
-          </tr></thead>
-          <tbody id="ga-earn-body"></tbody>
-          <tfoot><tr class="tot-row" id="ga-earn-tot"></tr></tfoot>
-        </table></div>
-      </div>
-
       <!-- KPI cards -->
       <div class="sg" id="ga-kpi" style="margin-bottom:20px;"></div>
 
@@ -1768,6 +1747,29 @@ ANNUAL_AVG.forEach(function(r){
   GA_ANN[r.co+'|'+r.it+'|'+r.gr]={apcs:r.avg_pcs,anw:r.avg_nw,adw:r.avg_dw,adr:r.avg_dr,aearn:r.avg_earn,awpp:r.avg_wpp,yrs:r.years_active};
 });
 
+// Earning/g = Total Earning / Total Net Weight, computed from full sales history (R)
+// Exact Collection+Item+Group combo first; fallback to Collection-level if combo has no sales history.
+var GA_EPG_BY_COMBO={};  // co|it|gr -> total earning / total net weight
+var GA_EPG_BY_COLL={};   // co -> total earning / total net weight
+(function(){
+  var comboAgg={}, collAgg={};
+  R.forEach(function(r){
+    var gr=r.gr||'-'; if(gr==='-'||gr==='')gr='—';
+    var ck=r.co+'|'+r.it+'|'+gr;
+    if(!comboAgg[ck])comboAgg[ck]={e:0,nw:0};
+    comboAgg[ck].e+=r.e; comboAgg[ck].nw+=r.nw;
+    if(!collAgg[r.co])collAgg[r.co]={e:0,nw:0};
+    collAgg[r.co].e+=r.e; collAgg[r.co].nw+=r.nw;
+  });
+  Object.keys(comboAgg).forEach(function(k){var a=comboAgg[k];GA_EPG_BY_COMBO[k]=a.nw>0?a.e/a.nw:0;});
+  Object.keys(collAgg).forEach(function(k){var a=collAgg[k];GA_EPG_BY_COLL[k]=a.nw>0?a.e/a.nw:0;});
+})();
+function gaEpgFor(co,it,gr){
+  var ck=co+'|'+it+'|'+(gr||'—');
+  if(GA_EPG_BY_COMBO[ck])return GA_EPG_BY_COMBO[ck];
+  return GA_EPG_BY_COLL[co]||0;
+}
+
 function initGA(){
   var MNS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var sel=document.getElementById('ga-mo');
@@ -1998,52 +2000,6 @@ function gaUpdateAllocBar(){
   });
 }
 
-function gaRenderEarnTable(rows,collEarn){
-  var m={};
-  rows.forEach(function(r){
-    if(!m[r.co])m[r.co]={pcs:0,nw:0};
-    m[r.co].pcs+=r.spcs;
-    m[r.co].nw+=r.snw;
-  });
-  var arr=SG_COLLS.map(function(co){
-    var d=m[co]||{pcs:0,nw:0};
-    var e=collEarn[co]||0;
-    return {n:co,pct:gaSt.alloc[co]||0,nw:d.nw,pcs:d.pcs,e:e,epg:d.nw>0?e/d.nw:0};
-  }).filter(function(a){return a.pct>0||a.e>0;}).sort(function(a,b){return b.e-a.e;});
-
-  var totalE=arr.reduce(function(s,a){return s+a.e;},0);
-  var maxE=Math.max.apply(null,arr.map(function(a){return a.e;}).concat([1]));
-
-  var h='';
-  arr.forEach(function(a){
-    var col=SG_COLORS[a.n]||'#999';
-    var sharePct=totalE>0?(a.e/totalE*100):0;
-    h+='<tr>'
-      +'<td>'+cb(a.n)+'</td>'
-      +'<td style="text-align:right;">'+a.pct.toFixed(1)+'%</td>'
-      +'<td style="text-align:right;">'+a.nw.toFixed(1)+'g</td>'
-      +'<td style="text-align:right;">'+a.pcs+'</td>'
-      +'<td style="text-align:right;" class="ep">'+fmt(a.e)+'</td>'
-      +'<td style="text-align:right;color:var(--tx2);">'+fmt(Math.round(a.epg))+'/g</td>'
-      +'<td>'+bar(a.e,maxE)+'</td>'
-      +'</tr>';
-  });
-  document.getElementById('ga-earn-body').innerHTML=h||'<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--tx2);">No allocation set</td></tr>';
-  document.getElementById('ga-earn-total').textContent=fmt(totalE)+' total';
-
-  var totPcs=arr.reduce(function(s,a){return s+a.pcs;},0);
-  var totNw =arr.reduce(function(s,a){return s+a.nw;},0);
-  var totPct=arr.reduce(function(s,a){return s+a.pct;},0);
-  document.getElementById('ga-earn-tot').innerHTML=
-    '<td style="font-weight:700;">Total</td>'
-    +'<td style="text-align:right;font-weight:700;">'+totPct.toFixed(1)+'%</td>'
-    +'<td style="text-align:right;font-weight:700;">'+totNw.toFixed(1)+'g</td>'
-    +'<td style="text-align:right;font-weight:700;">'+totPcs+'</td>'
-    +'<td style="text-align:right;font-weight:700;" class="ep">'+fmt(totalE)+'</td>'
-    +'<td style="text-align:right;font-weight:700;color:var(--tx2);">'+(totNw>0?fmt(Math.round(totalE/totNw)):'—')+'/g</td>'
-    +'<td>100%</td>';
-}
-
 function gaCalc(){
   var mo  =gaSt.month;
   var tgt =parseFloat(document.getElementById('ga-tgt').value)||10000;
@@ -2084,7 +2040,7 @@ function gaCalc(){
     var dr=(p?p.dr:0)||(a?a.adr:0)||(s?s.dr:0)||0;
     var ae=p?p.ae:(a?a.aearn:0);
     var ei=dpcs*ae;
-    var epg=cnw>0?(cpcs*ae)/cnw:0;
+    var epg=gaEpgFor(co,it,gr);
     rows.push({co:co,it:it,gr:gr,spcs:spcs,cpcs:cpcs,dpcs:dpcs,snw:snw,cnw:cnw,dnw:dnw,anw:anw,dr:dr,ae:ae,ei:ei,epg:epg});
   });
 
@@ -2104,8 +2060,6 @@ function gaCalc(){
     var eEl=document.getElementById('gal-e-'+coKey);
     if(eEl)eEl.textContent=fmt(collEarn[co]||0);
   });
-
-  gaRenderEarnTable(rows,collEarn);
 }
 
 
@@ -2144,16 +2098,23 @@ function gaRowLeft(dnw){
   return isMiss?'border-left:3px solid #27ae60;':isExc?'border-left:3px solid #c0392b;':'';
 }
 function gaSum(arr,key){return arr.reduce(function(s,r){return s+r[key];},0);}
-function gaAggGroup(rows){
+function gaAggGroup(rows,collName){
   var cnw=gaSum(rows,'cnw'), snw=gaSum(rows,'snw'), ei=gaSum(rows,'ei');
-  var stockEarn=gaSum(rows.map(function(r){return{e:r.cpcs*r.ae};}),'e');
+  var epgVal;
+  if(collName){
+    // Collection-level rollup: use flat Total Earning / Total Net Weight for the whole collection
+    epgVal=GA_EPG_BY_COLL[collName]||0;
+  } else {
+    var stockEarn=gaSum(rows.map(function(r){return{e:r.cnw*r.epg};}),'e');
+    epgVal=cnw>0?stockEarn/cnw:0;
+  }
   return {
     spcs:gaSum(rows,'spcs'), cpcs:gaSum(rows,'cpcs'),
     dpcs:gaSum(rows,'cpcs')-gaSum(rows,'spcs'),
     snw:+snw.toFixed(2), cnw:+cnw.toFixed(2),
     dnw:+(cnw-snw).toFixed(2),
     ei:ei,
-    epg:cnw>0?stockEarn/cnw:0,
+    epg:epgVal,
     dr:snw>0?+(gaSum(rows.map(function(r){return{dw:r.dr*r.snw/10};}),'dw')/snw*10).toFixed(2):0
   };
 }
@@ -2193,7 +2154,7 @@ function gaRender(){
     rows='<tr><td colspan="12" style="text-align:center;padding:28px;color:var(--tx2);">No rows match</td></tr>';
   } else {
     pageCoNames.forEach(function(coName,ci){
-      var coAgg=gaAggGroup(coMap[coName].rows);
+      var coAgg=gaAggGroup(coMap[coName].rows,coName);
       var coOpen=!!gaExpandCo[coName];
       var coCaret=coOpen?'&#x25BC;':'&#x25B6;';
       rows+='<tr class="ga-co-row" data-co="'+esc(coName)+'" style="cursor:pointer;'+gaRowLeft(coAgg.dnw)+'">'
@@ -2240,7 +2201,7 @@ function gaRender(){
   var tcnw =gaSt.filt.reduce(function(s,r){return s+r.cnw;},0);
   var tdnw =parseFloat((tcnw-tsnw).toFixed(2));
   var tei  =gaSt.filt.reduce(function(s,r){return s+r.ei;},0);
-  var tStockEarn=gaSt.filt.reduce(function(s,r){return s+r.cpcs*r.ae;},0);
+  var tStockEarn=gaSt.filt.reduce(function(s,r){return s+r.cnw*r.epg;},0);
   var tEpg=tcnw>0?tStockEarn/tcnw:0;
   document.getElementById('ga-tot').innerHTML=
     '<td></td><td colspan="2" style="font-weight:700;">Total ('+coNames.length+' collections, '+gaSt.filt.length+' rows)</td>'
@@ -2283,17 +2244,16 @@ function gaExportExcel(){
   rows.push(['Collection','Item','Group','Suggested PCS','Stock PCS','Δ PCS','Suggested Wt (g)','Stock Wt (g)','Δ Wt (g)','Earning/g','Dia Ratio','Earning Impact','Status']);
   data.forEach(function(r){
     var status=r.dnw<-0.5?'Missing':r.dnw>0.5?'Excess':'OK';
-    var epg=r.cnw>0?(r.cpcs*r.ae)/r.cnw:0;
     rows.push([
       r.co, r.it, (r.gr==='—'||r.gr==='-')?'':r.gr,
       r.spcs, r.cpcs, r.dpcs,
       r.snw, r.cnw, r.dnw,
-      Math.round(epg), r.dr, r.ei, status
+      Math.round(r.epg||0), r.dr, r.ei, status
     ]);
   });
   // Totals row
   var sum=function(k){return data.reduce(function(s,r){return s+(r[k]||0);},0);};
-  var tStockEarn=data.reduce(function(s,r){return s+r.cpcs*r.ae;},0);
+  var tStockEarn=data.reduce(function(s,r){return s+r.cnw*r.epg;},0);
   var tcnw=sum('cnw');
   rows.push(['Total','','',
     sum('spcs'), sum('cpcs'), sum('cpcs')-sum('spcs'),
